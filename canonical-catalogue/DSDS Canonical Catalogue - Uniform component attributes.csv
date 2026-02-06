@@ -1,0 +1,20 @@
+Uniform component attributes (fields your simulator should support),
+"id, 
+type, 
+provider, 
+region, 
+zone",
+config,(tunable fields per type)
+resources,(cpu/mem/io/gpu)
+"start_time, 
+stop_time, 
+deploy_version",
+dependencies,(direct edges)
+reverse_dependencies,(computed)
+health_check,(endpoint; failure semantics)
+telemetry,"(metrics, logs, traces)"
+slo,(SLI targets)
+fault_injection,"hooks (latency, error, packet loss)"
+scaling_policy,"(metrics triggers, cooldown)"
+persistence,(ephemeral / durable)
+security,"(principals, roles)"

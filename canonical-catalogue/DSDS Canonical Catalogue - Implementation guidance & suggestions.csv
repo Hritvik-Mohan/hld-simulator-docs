@@ -1,0 +1,12 @@
+Implementation guidance & suggestions
+"Represent system as directed graph: 
+      nodes=components, 
+      edge=dependencies
+
+      Each node has deterministic state transitions driven by events"
+Use discrete-event simulation engine with deterministic random seed
+"Provide a component plugin interface so new component types (e.g., specialized ML serving infra) can be added"
+Model time explicitly and allow time dilation (fast-forward)
+Keep observability data compact (sample trace only for key requests)
+Allow multi-tenant and multi-region configuration
+"Provide library of pre-built component templates (e.g., rds-postgres, kafka-cluster, redis-cluster)"

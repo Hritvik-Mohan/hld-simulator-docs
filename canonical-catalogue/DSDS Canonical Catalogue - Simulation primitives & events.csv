@@ -1,0 +1,28 @@
+Simulation primitives & events (for deterministic runs),,
+Event types,request_arrival,"(source, path, headers, body)"
+,node_failure,"(component_id, failure_type)"
+,network_partition,"(subset A, subset B, rate_limit)"
+,latency_spike,(component or network)
+,backlog_buildup,"(queue id, delta)"
+,config_rollout,"(component, new_config)"
+,deployment,"(component, version)"
+,scale_event,"(component, new_replicas)"
+,db_failover,(primary->replicas)
+,reconciliation_event,(batch job complete)
+,security_breach,(credential compromise)
+,scheduled_job,(cron id)
+,storage_full,(bucket/volume)
+,schema_change,(schema id)
+,,
+Fault injections,deterministic (at time T) or probabilistic (p%),
+,Examples:,5s added latency to DB for 30s
+,,30% packet loss between region A & B
+,,
+Workload profiles,spike,
+,steady-state,
+,diurnal,
+,sawtooth,
+,bursty tail,
+,long-tail,
+,,
+Time models,Real time vs tick-based deterministic clock - simulator should be deterministic,Event queue processed in deterministic order

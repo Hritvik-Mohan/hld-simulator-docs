@@ -1,0 +1,8 @@
+Policies and invariants (for deterministic checks),
+Idempotency invariant,operation with same idempotency key must be delivered exactly-once semantics
+Causal ordering,"For certain topics (e.g., financial transactions) preserve message order"
+Consistency invariants,"e.g., account.balance >= 0 must hold"
+Security invariants,no request should access resource unless role permits
+SLO invariants,maintain P95 < X ms
+,
+Implement checkers that run after a simulation to assert invariants or produce,

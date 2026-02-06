@@ -1,0 +1,10 @@
+Useful utilities & solver components to include
+Deterministic random speed controller
+Scenario composer (DSL) - combine primitives
+Policy engine (OPA) for validating deploys)
+Cost calculator (simulate provider pricing)
+Impact calculator (how many users affected by component X failing)
+Replay engine (replay recorded event traces)
+Fuzzing harness (mutate events slightly deterministically)
+Chaos scheduler (pre-program failures at deterministic times)
+Comparators (A vs B design diff runner)

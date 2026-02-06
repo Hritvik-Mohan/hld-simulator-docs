@@ -1,0 +1,14 @@
+Metrics & SLIs to model (default set),
+Latency,"P50, P95, P99"
+Throughput,"request/sec,
+message/sec"
+Availability,% successful requests over window
+Error rate,4xx/5xx ratio
+Saturation,"CPU, memory, queue length, iowait"
+Durability,lost writes / restored from backup
+Consistency lag,replication lag (seconds)
+Cost,resource-hours * price-per-unit
+Recovery time,"MTTR, time to restore SLA"
+,
+,
+"Model how SLO breaches affect business-level alerts (e.g., page open, critical alert)",

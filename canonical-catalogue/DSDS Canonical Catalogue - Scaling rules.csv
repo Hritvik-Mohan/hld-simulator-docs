@@ -1,0 +1,7 @@
+Scaling rules and knobs to simulate,
+Horizontal scaling,add replicas; test cold-starts
+Vertical scaling,change instance sizing
+Sharding & partition rebalancing,rebalancing cost & time (throttle re-shards)
+Autoscaler policies,"instant vs delayed, scale-in protection"
+Queue-based scaling,scale on queue depth
+Backoff & jitter configurations,to prevent retry storms

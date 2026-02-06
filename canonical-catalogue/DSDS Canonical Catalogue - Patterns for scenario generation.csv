@@ -1,0 +1,23 @@
+Patterns:
+CQRS
+Event Sourcing
+Saga (choreography & orchestration)
+Circuit Breaker
+Bulkhead
+Strangler
+Ambassador
+Sidecar
+BFF (Backend-for-Frontend)
+Anti-Corruption Layer
+Retry with Exponential Backoff + Jitter
+Backpressure
+Rate Limiting
+Blue/Green
+Canary
+Canary Analysis
+Autoscaling by Queue Depth
+Leader-Follower
+Read-replicas + Primary
+Cache-aside
+Write-through
+Materialized Views

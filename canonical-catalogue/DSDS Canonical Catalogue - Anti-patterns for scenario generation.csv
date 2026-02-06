@@ -1,0 +1,8 @@
+Anti-patterns:
+Monolithic shared DB
+Tight coupling via synchronous RPC for long ops
+Unlimited retries (retry storm)
+Infinite TTL caches for mutable data
+Over-sharding
+Single expensive transaction across services
+Blocking calls in event handlers

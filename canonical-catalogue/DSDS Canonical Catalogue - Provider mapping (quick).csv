@@ -1,0 +1,13 @@
+"Provider mapping (quick) - helpful for ""flavor"" toggles",
+Compute,"Lambda (AWS), Cloud Functions (GCP), Azure Functions"
+Container registries,ECR / GCR / ACR
+DBs,RDS (AWS) / Cloud (GCP) / Azure SQL; DynamoDB / BIgtable / CosmosDB
+Object,S3 / GCS / Azure Blob
+Message,SQS / Pub/Sub / Service Bus; Kafka (self-managed) / MSK / Confluent
+Orchestration,EKS / GKE / AKS
+Secrets,AWS Secrets Manager / GCP Secret Manager / KeyVault
+KMS,AWS KMS / Cloud KMS / Azure Key Vault
+Monitoring,CloudWatch / Stackdriver / Azure Monitor
+CDN,CloudFront / Cloud CDN / Azure CDN
+,
+Add provider-specific latency/quotas/cost profiles,

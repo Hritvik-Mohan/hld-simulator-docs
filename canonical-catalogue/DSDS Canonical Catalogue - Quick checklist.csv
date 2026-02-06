@@ -1,0 +1,29 @@
+Quick checklist for “include everything”
+
+"Compute types (VM, container, serverless, batch)"
+
+"Networking (LB, TGW, CDN, VPN)"
+
+"Storage tiers (hot, warm, cold; object/block/file)"
+
+"Messaging & streaming (queue, pubsub, stream, event bus)"
+
+"Coordination (etcd, leader election, locks)"
+
+"Security stack (WAF, IAM, Vault, KMS, CA)"
+
+"Observability (metrics, logs, tracing, alerts)"
+
+"Delivery & governance (CI/CD, IaC, policy-as-code)"
+
+"Real-time & media (WebRTC, SFU, TURN, transcoders)"
+
+"Edge & CDN (edge compute, worker scripts)"
+
+"Integration (webhooks, third-party APIs, payment gateways)"
+
+"Data infra (ETL, CDC, DW, feature store)"
+
+Patterns & anti-patterns
+
+Deterministic fault injection & scenario replay

@@ -1,0 +1,38 @@
+Component specification schema (YAML) - use as deterministic model input
+"component:
+  id: api-orders-v1
+  type: api  # enum: api, microservice, db, queue, etc
+  provider: generic  # or aws/gcp/azure
+  config:
+    image: registry.example.com/orders:1.4.2
+    replicas: 4
+    resources:
+      cpu: 500m
+      memory: 1024Mi
+    env:
+      - name: DB_HOST
+        ref: postgres-orders
+    timeouts:
+      request_timeout_ms: 800
+      connect_timeout_ms: 100
+    retries:
+      policy: exponential_backoff
+      max_attempts: 3
+    circuit_breaker:
+      failure_threshold: 0.05
+      recovery_window_s: 60
+  telemetry:
+    metrics: true
+    tracing: sample_rate: 0.1
+  sla:
+    slo_latency_p95_ms: 300
+    slo_error_rate: 0.01
+  dependencies:
+    - postgres-orders
+    - redis-cache
+  failure_modes:
+    - name: db_connection_spike
+      trigger: increased_latency_on_dep
+      severity: high
+      deterministic: true
+  tags: [""payments"", ""v1""]"

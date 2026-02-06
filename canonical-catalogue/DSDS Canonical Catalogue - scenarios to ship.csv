@@ -1,0 +1,8 @@
+Example deterministic scenarios to ship with the simulator
+Cache stampede after TTL expiry for 1M keys; simulate origin overload.
+DB primary crash during heavy writes - test loss/consistency and failover time.
+Network partition between two regions with cross-region writes -> check split-brain.
+Auth provider outage - failed logins cascade to other services.
+Sudden traffic spike (10x) with cold start penalty for serverless.
+Price surge - simulate cost impact and auto-scale mitigation.
+Feature flag rollback failing halfway - simulate mixed behavior.

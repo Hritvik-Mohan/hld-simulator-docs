@@ -1,0 +1,10 @@
+Deterministic choreography for complex flows (examples),
+Payment flow,API > Auth > Orders DB > Payment Gateway (external) > Notification service > Event bus (order.completed)
+,"Failure to simulate: Payment gateway 5% latency spike, webhook retries, idempotency handling in orders service."
+,
+Media upload & encoding,Client -> CDN ingest -> Upload service -> Queue -> Transcoder workers -> Object store -> CDN invalidate
+,"Failures: transcode worker crash during job, job retries causing duplicate transcoding, storage full"
+,
+Live call (WebRTC SFU),"Signaling -> SFU -> TURN for relays; simulate NAT exhaustion, SFU overload, bitrate adaptation"
+,
+DB failover,"Primary fails => replica promoted, replication lag causes stale read — simulate graceful switch and race conditions"

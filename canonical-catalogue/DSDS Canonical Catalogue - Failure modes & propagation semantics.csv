@@ -1,0 +1,13 @@
+Failure modes & propagation semantics (must model),
+Cascading failures,downstream timeouts cause upstream to retry -> overload -> more timeouts
+Backpressure,"queue saturate, producers should experience increased latency or block"
+Resource exhaustion,"ephemeral port, file descriptors, NAT port exhaustion"
+Split-brain,cluster partition causing write conflicts
+Stale reads,read-after-write inconsistency due to eventual consistency
+Data loss,failed commits in distributed transactions
+Thundering herd,cache expiry at same time causing origin overload
+Configuration drift,node runs old config causing policy mismatch
+Security failures,leaked token used for privilege escalation
+,
+,
+Simulate failure propagation deterministically: ,"define propation rules (e.e., service fails after X dependency failures or after its error rate > threshold)"

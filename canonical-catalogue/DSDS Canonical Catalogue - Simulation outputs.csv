@@ -1,0 +1,7 @@
+Simulation outputs & debug artefacts,
+Event traces,full ordered list
+Span traces,distributed traces for request
+Heatmap,load over components over time
+Causal graph,visualize failures propagation
+Invariant violations,annotated with root cause
+Reproducible scenario spec,so the same deterministic random speed produces same outcome

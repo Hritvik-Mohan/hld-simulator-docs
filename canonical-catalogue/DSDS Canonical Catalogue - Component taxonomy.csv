@@ -1,0 +1,111 @@
+Component taxonomy,
+Compute,API (stateless REST/gRPC endpoint)
+,Microservice (stateful or stateless)
+,Sidecar
+,Batch worker / Job
+,Serverless Function (Lambda-like)
+,FaaS Background (Event-driven)
+,Container VM / VM instance
+,Edge Compute / CDN Edge Worker
+,GPU / Accelerator node
+Network & Edge,Load Balancer (L4 / L7)
+,Global Traffic Manager / Global LB
+,NAT Gateway / Egress NAT
+,Transit Gateway / TGW / Backbone
+,VPN / Customer Gateway / Direct Connect
+,CDN (cache layer)
+,API Gateway
+,Service Mesh (control plane + data plane)
+,"Reverse Proxy / Edge Proxy (e.g., NGINX, Envoy)"
+,SR-IOV / DPDK / high-performance NICs
+,Network policy / ACL
+Storage & Data,Relational DB (SQL)
+,"NoSQL (Document, Key-Value, Wide-Column)"
+,Object Storage
+,Block Storage (attached volumes)
+,Distributed File System / POSIX over network
+,"Cache (in-memory: Redis, Memcached)"
+,"Search / Index (Elasticsearch, OpenSearch)"
+,Time-series DB
+,"Columnar / OLAP (BigQuery, Redshift)"
+,Graph DB
+,Data Warehouse / Lake
+,Archive / Cloud storage (Glacier-like)
+,Schema Registry (Avro/Protobuf/JSON Schema)
+,Change Data Capture (CDC)
+,Backup & Snapshot service
+,Encryption Key Management (KMS)
+"Messaging, Streaming & Eventing","Queue (SQS-like, RabbitMQ)"
+,Pub/Sub (fan-out topics)
+,Stream (Kafka-like)
+,Event Bus (EventBridge)
+,Event Sourcing Store
+,Schema Registry (repeated here for event systems)
+,Message Broker Cluster
+,Task Queue & Scheduler
+"Orchestration, Control Plane & Infrastructure",Kubernetes Cluster (Control plane + Node pool)
+,Container Registry (ECR/Container Registry)
+,"Service Registry / Discovery (Consul, Eureka)"
+,"Configuration Store (ConfigMap, Parameter Store)"
+,Secrets Manager
+,Cluster Autoscaler
+,"Orchestrator Scheduler (K8s scheduler, Nomad)"
+,CI/CD Runner / Build service
+,Infrastructure-as-Code engine
+,Container Runtime (CRI/OSE)
+,Provisioner / Bootstrap scripts
+Security & Identity,IAM / RBAC
+,WAF (Web Application Firewall)
+,Firewall / Network ACL
+,Bastion / Jump Host
+,Certificate Authority / PKI
+,Secrets Roation & Vault
+,Key Management Service (KMS)
+,DLP / Content Inspection
+,Identity Provider (OIDC/SAML)
+,SIEM / Security Analytics
+,"Privilate Escalation Controls, Token Managers"
+Observability & Telemetry,Logging (Centralized)
+,Tracing (Distributed)
+,Metrics store (Prometheus-like)
+,Alerting & PagerDuty hooks
+,Dashboards / Visualization
+,RUM / Synthetic monitoring
+,Health check manager
+,Profiling service (CPU/heap profiler)
+Devops / Delivery,Artifact Repository
+,Build System / Runner
+,Feature Flag Service
+,Blue/Green & Canary Deployment Controller
+,Chaos Engineering Framework
+,Policy as Code / Gatekeeper
+,Secrets management in pipeline
+Data Infrastructure & Analytics,ETL / ELT Pipelines
+,Streaming Analytics / CEP
+,Feature Store
+,"Model Serving (TF Serving, SageMaker)"
+"Real-time, Media & P2P",WebSockets Gateway
+,Push Notification Service (APNs/FCM)
+,Transcoder / Media Pipeline
+,Signaling Server
+,SFU / MCU
+,WebRTC Mesh
+External & Integration,Webhook Gateway
+,Third-party API connectors (SaaS adapters)
+,Payment Gateway
+,Third-party Auth
+"Directories, DNS & CERTS",DNS authoritative server
+,Internal DNS / Split-horizon
+,Certificate distro & ACME
+Consensus & Coordination,Etcd / Consul KV
+,Leader election primitives
+,Distributed locks (Dist-Lock)
+,Coordination service (Zookeeper)
+Auxiliary,"Service Mesh Telemetry (mTLS certs, sidecar)"
+,Policy Engines (OPA)
+,Rate limiter (global and per-user)
+,Circuit breaker / Bulkhead controllers
+,Idempotency keys manager
+,Request tracking headers propagation
+,Backpressure & QoS controllers
+,Throttlers & Token buckets
