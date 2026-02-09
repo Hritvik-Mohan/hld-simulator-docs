@@ -15,9 +15,11 @@ hld-simulator-docs/
 │   ├── part-2.md                     # Introduction to Simulation
 │   └── part-3.md                     # Core Data Structures & Mechanics
 ├── schema/
-│   └── complete_simulator_schema.ts  # Full TypeScript type definitions
+│   ├── complete_simulator_schema.ts  # Full TypeScript type definitions
+│   └── README.md                     # Schema documentation
 └── canonical-catalogue/
-    └── *.csv                         # 17 reference catalogue files
+    ├── *.csv                         # 17 reference catalogue files
+    └── README.md                     # Catalogue documentation
 ```
 
 ## Documentation Roadmap
@@ -55,15 +57,35 @@ Covers implementation in depth with working code:
 
 The `canonical-catalogue/` directory contains 17 CSV reference files (the DSDS Canonical Catalogue) covering:
 
-- Component taxonomy and specification schema
-- Failure modes and propagation semantics
-- Metrics and SLIs
-- Simulation primitives and events
-- Scaling rules
-- Patterns and anti-patterns for scenario generation
-- Policies and invariants
-- Provider mappings, implementation guidance, and example scenarios
+- **Component taxonomy** — ~110+ component types across 13 categories (compute, network, storage, messaging, orchestration, security, observability, DevOps, data infra, real-time, integration, consensus, DNS)
+- **Component specification** — YAML schema template and uniform attributes every component must support
+- **Simulation primitives** — event types, workload profiles (spike, steady-state, diurnal, bursty), and fault injection modes
+- **Failure modes** — cascading failures, backpressure, split-brain, thundering herd, resource exhaustion, and propagation rules
+- **Patterns & anti-patterns** — 23 architectural patterns (CQRS, Saga, Circuit Breaker, etc.) and 8 anti-patterns to detect
+- **Metrics & SLIs** — latency percentiles, throughput, availability, saturation, cost, and recovery time
+- **Policies & invariants** — idempotency, causal ordering, consistency, and security checks
+- **Pre-built scenarios** — 7 deterministic test scenarios (cache stampede, DB failover, network partition, auth outage, traffic spike, and more)
+- **Provider mapping** — AWS / GCP / Azure equivalents for multi-cloud simulation
+- **Implementation guidance** — architecture recommendations, utility components, and a completeness checklist
+
+See [`canonical-catalogue/README.md`](canonical-catalogue/README.md) for detailed descriptions of each file.
 
 ## Schema
 
-`schema/complete_simulator_schema.ts` consolidates the full type system for the simulator, incorporating definitions from both the documentation and the canonical catalogue. It covers compute types, storage types, network types, component specifications, failure modes, scaling rules, and more.
+`schema/complete_simulator_schema.ts` consolidates the full type system for the simulator (2300+ lines), incorporating definitions from both the documentation and the canonical catalogue. It is organized into 17 parts:
+
+- **Component types** — union types for all ~110+ component types plus a unified `ComponentType`
+- **Component specification** — `ComponentDefinition` with identity, resources, lifecycle, dependencies, health checks, telemetry, SLOs, fault injection, scaling, and security
+- **Simulation events** — `SimulationEvent` with 50+ event types and typed `EventData` variants
+- **Failure propagation** — `FailurePropagation` with conditions and cascading effects
+- **Workload profiles** — 8 traffic pattern types (steady-state, spike, diurnal, sawtooth, bursty, long-tail, replay, custom)
+- **Fault injection** — `FaultInjection` with 14 fault types and deterministic/probabilistic/conditional timing
+- **Metrics & outputs** — `MetricsDefinition`, `SimulationOutput` with traces, heatmaps, causal graphs, and reproducibility specs
+- **Scaling & invariants** — horizontal/vertical scaling simulation, shard rebalancing, and invariant checks
+- **Provider configs** — cloud-specific latency, quotas, and cost profiles (includes pre-built `AWS_PROFILE`)
+- **Utilities** — `ScenarioComposer`, `CostCalculator`, `ImpactCalculator`, `ReplayEngine`, `DesignComparator`
+- **Built-in scenarios** — 5 pre-configured `BUILT_IN_SCENARIOS` (cache stampede, DB crash, network partition, auth outage, traffic spike)
+- **Distribution configs** — 12 statistical distributions (normal, log-normal, exponential, Poisson, Weibull, gamma, beta, Pareto, empirical, mixture, etc.)
+- **Component configs** — type-specific configurations for APIs, databases, caches, queues, streams, serverless functions, CDNs, SFUs, and gateways
+
+See [`schema/README.md`](schema/README.md) for the full breakdown.
