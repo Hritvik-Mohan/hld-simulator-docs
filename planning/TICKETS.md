@@ -1507,34 +1507,39 @@ self.onmessage = (event: MessageEvent<WorkerCommand>) => {
     case "RESUME": handleResume();                    break;
     case "STOP":   handleStop();                      break;
     case "STEP":   handleStep(event.data.count);      break;
+    case "SET_SPEED": handleSetSpeed(event.data.playbackSpeed); break;
   }
 };
 ```
 
-**`handleRun(topology: TopologyJSON)`**:
+**`handleRun(topology: TopologyJSON, playbackSpeed?: number)`**:
 1. Validate the topology using the validator (T-003). If invalid, postMessage `{ type: "ERROR", error: validationErrors }`.
 2. Create `SimulationEngine(topology)`.
-3. Set up engine callbacks:
+3. Store `playbackSpeed` (default: `0` = max/batch mode).
+4. Set up engine callbacks:
    - `onProgress`: postMessage `{ type: "PROGRESS", percent, eventsProcessed }`
-   - `onSnapshot`: postMessage `{ type: "SNAPSHOT", data: snapshot }`
-4. Call `engine.run()`.
-5. postMessage `{ type: "COMPLETE", result: output }`.
-6. Catch any errors → postMessage `{ type: "ERROR", error: message }`.
+   - `onSnapshot`: If `playbackSpeed > 0`, insert `await delay(snapshotInterval / playbackSpeed)` before posting the message, so the UI receives snapshots at a watchable pace. If `playbackSpeed === 0`, post immediately (batch mode). Then postMessage `{ type: "SNAPSHOT", data: snapshot }`.
+5. Call `engine.run()`.
+6. postMessage `{ type: "COMPLETE", result: output }`.
+7. Catch any errors → postMessage `{ type: "ERROR", error: message }`.
 
 **`handlePause/Resume/Stop`**: Call the corresponding engine methods.
 
 **`handleStep(count)`**: Call `engine.step(count)` then postMessage a snapshot.
+
+**`handleSetSpeed(playbackSpeed)`**: Update the stored `playbackSpeed` value mid-run. Takes effect on the next snapshot emission. This allows users to change speed without restarting the simulation.
 
 Also define the message protocol types:
 
 ```typescript
 // src/worker/protocol.ts
 export type WorkerCommand =
-  | { type: "RUN";    payload: TopologyJSON }
+  | { type: "RUN";    payload: TopologyJSON; playbackSpeed?: number }
   | { type: "PAUSE" }
   | { type: "RESUME" }
   | { type: "STOP" }
   | { type: "STEP";   count: number }
+  | { type: "SET_SPEED"; playbackSpeed: number }
 
 export type WorkerMessage =
   | { type: "PROGRESS";  percent: number; eventsProcessed: number }
@@ -1551,6 +1556,9 @@ export type WorkerMessage =
 - [ ] ERROR message sent on invalid topology
 - [ ] Worker doesn't block the main thread (UI stays responsive)
 - [ ] Protocol types exported from `src/worker/protocol.ts`
+- [ ] `playbackSpeed` on RUN command throttles snapshot emission (1 = real-time, 5 = 5x, 10 = 10x, 0 = max/batch)
+- [ ] SET_SPEED command updates playback speed mid-simulation without restart
+- [ ] Batch mode (speed=0) emits snapshots as fast as possible with no delay
 
 ---
 
@@ -1575,29 +1583,32 @@ export function useSimulation() {
     result: SimulationOutput | null,
     error: string | null,
     snapshots: TimeSeriesSnapshot[],
+    playbackSpeed: number,         // 0 = max/batch, 1 = real-time, 5/10 = accelerated
 
     // Actions
-    run: (topology: TopologyJSON) => void,
+    run: (topology: TopologyJSON, playbackSpeed?: number) => void,
     pause: () => void,
     resume: () => void,
     stop: () => void,
     step: (count: number) => void,
     reset: () => void,
+    setPlaybackSpeed: (speed: number) => void,  // change speed mid-run
   };
 }
 ```
 
 **Implementation**:
 1. Create the worker lazily on first `run()` call.
-2. On `run(topology)`: postMessage `{ type: "RUN", payload: topology }`, set status to "running".
+2. On `run(topology, playbackSpeed?)`: postMessage `{ type: "RUN", payload: topology, playbackSpeed: playbackSpeed ?? 0 }`, set status to "running", store `playbackSpeed` in state.
 3. Listen for worker messages:
    - `PROGRESS` → update `progress` state
    - `SNAPSHOT` → append to `snapshots` array
    - `COMPLETE` → set `result`, set status to "complete"
    - `ERROR` → set `error`, set status to "error"
 4. `pause/resume/stop` → postMessage the corresponding command.
-5. `reset` → terminate worker, clear all state.
-6. Cleanup: terminate worker on component unmount.
+5. `setPlaybackSpeed(speed)` → update local state, postMessage `{ type: "SET_SPEED", playbackSpeed: speed }`.
+6. `reset` → terminate worker, clear all state.
+7. Cleanup: terminate worker on component unmount.
 
 **AC**:
 - [ ] `status` transitions correctly: idle → running → complete
@@ -1607,6 +1618,9 @@ export function useSimulation() {
 - [ ] `stop()` terminates the simulation
 - [ ] Worker is terminated on unmount (no memory leaks)
 - [ ] Hook can be called from any React component
+- [ ] `run()` accepts optional `playbackSpeed` parameter (default 0 = batch)
+- [ ] `setPlaybackSpeed()` sends SET_SPEED command to worker mid-run
+- [ ] `playbackSpeed` state reflects current speed setting
 
 ---
 
@@ -1935,7 +1949,1040 @@ Generate a human-readable `summary` string highlighting the most significant dif
 
 ---
 
+## Phase 10 — UI Components
+
+### T-033: Build Node & Edge Inspector Panel
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-001 (types — needs `ComponentNode`, `EdgeDefinition`, `DistributionConfig` types) |
+| **Files** | `src/ui/components/NodeConfigPanel.tsx`, `src/ui/components/EdgeConfigPanel.tsx` |
+| **Size** | L |
+
+**Context**: When a user clicks a node or edge on the React Flow canvas, a right-side panel opens where they can configure every simulation parameter. This is the primary way users set up their system before running. Without this panel, every node uses defaults and the user has no control.
+
+Refer to `ui.md` Section 3.3 for the exact panel layout.
+
+**What to build**:
+
+#### NodeConfigPanel
+
+A React component that receives a selected node's config and renders editable form fields. It should update the React Flow node's `data` in place so the serializer (T-028) picks up the values.
+
+**Sections and fields** (all map to `ComponentNode` properties from T-001):
+
+| Section | Fields | Input type |
+|---------|--------|------------|
+| Identity | `type` (dropdown — grouped by category from `ComponentType`), `label` (text) | dropdown, text |
+| Resources | `cpu` (number), `memory` (number, MB), `replicas` (number), `maxReplicas` (number) | number inputs |
+| Queue Model | `workers` (number), `capacity` (number), `discipline` (dropdown: FIFO/LIFO/Priority/WFQ) | number, dropdown |
+| Processing | `distribution.type` (dropdown), distribution params (dynamic — see below), `timeout` (number, ms) | dropdown, number |
+| Dependencies | `critical[]` (multi-select of other node IDs), `optional[]` (same) | multi-select |
+| Resilience | Circuit breaker toggle + params, retry toggle + params, rate limiter toggle + params, bulkhead toggle + params | toggles + number inputs |
+| SLO Targets | `latencyP99` (number, ms), `availabilityTarget` (number, %), `errorBudget` (number) | number inputs |
+| Scaling | Enable toggle, `metric` (dropdown), `scaleUpThreshold`, `scaleDownThreshold`, `maxReplicas`, `cooldown` | toggle, dropdown, numbers |
+
+**Dynamic distribution params**: When the user selects a distribution type, show the relevant params:
+- `constant` → `value`
+- `log-normal` → `mu`, `sigma` + computed preview: "median ≈ Xms, P99 ≈ Yms"
+- `exponential` → `rate`
+- `normal` → `mean`, `stddev`
+- `uniform` → `min`, `max`
+
+The computed preview for log-normal is: `median = e^mu`, `P99 ≈ e^(mu + 2.326 * sigma)`. Show this below the inputs so the user understands what their params mean in real terms.
+
+#### EdgeConfigPanel
+
+Same pattern, but for edges. Sections:
+
+| Section | Fields |
+|---------|--------|
+| Connection | `mode` (dropdown: synchronous/asynchronous/streaming/conditional), `protocol` (dropdown) |
+| Latency | `pathType` (dropdown), `distribution.type` + params (same dynamic pattern as node) |
+| Capacity | `bandwidth` (number, Mbps), `maxConcurrentRequests` (number) |
+| Reliability | `packetLossRate` (number, 0-1), `errorRate` (number, 0-1) |
+| Routing | `weight` (number) |
+
+**Integration with React Flow**:
+- Listen for `onNodeClick` / `onEdgeClick` from the React Flow canvas.
+- When a node/edge is selected, populate the panel with its current `data`.
+- On any field change, update the node/edge `data` via React Flow's `setNodes` / `setEdges`.
+- When nothing is selected, show an empty state: "Select a node or edge to configure."
+
+**AC**:
+- [ ] Clicking a node opens `NodeConfigPanel` with that node's current values
+- [ ] Clicking an edge opens `EdgeConfigPanel`
+- [ ] Changing a field immediately updates the React Flow node's `data`
+- [ ] Distribution type dropdown dynamically shows relevant params
+- [ ] Log-normal preview shows computed median and P99
+- [ ] All `ComponentType` options available in the type dropdown, grouped by category
+- [ ] Dependencies multi-select shows only other nodes in the topology
+- [ ] Resilience toggles expand/collapse their sub-fields
+- [ ] Empty state shown when nothing is selected
+- [ ] Panel scrolls if content overflows
+
+---
+
+### T-034: Build Scenario Bar (workload config, fault config, simulation controls)
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-001 (types), T-026 (useSimulation hook) |
+| **Files** | `src/ui/components/ScenarioBar.tsx`, `src/ui/components/WorkloadConfig.tsx`, `src/ui/components/FaultConfig.tsx`, `src/ui/components/SimulationControls.tsx` |
+| **Size** | L |
+
+**Context**: The scenario bar sits at the top of the workspace. It has three responsibilities: (1) configure the workload, (2) configure fault injections, (3) control the simulation run. This is the "control panel" of the simulator.
+
+Refer to `ui.md` Section 3.5 for the exact layout.
+
+**What to build**:
+
+#### ScenarioBar (container)
+
+A horizontal bar component that composes `WorkloadConfig`, `FaultConfig`, and `SimulationControls` side by side.
+
+#### WorkloadConfig
+
+| Field | Input | Maps to |
+|-------|-------|---------|
+| Pattern | Dropdown: Constant / Poisson / Bursty / Diurnal / Spike / Sawtooth | `workload.pattern` |
+| Base RPS | Number input | `workload.baseRps` |
+| Duration | Number input (seconds) | `global.simulationDuration` |
+| Seed | Text input (read-only display + copy button, auto-generated if empty) | `global.seed` |
+
+When "Spike" is selected, show additional fields: `spikeTime`, `spikeRps`, `spikeDuration`.
+When "Diurnal" is selected, show `peakMultiplier` field.
+When "Bursty" is selected, show `burstRps`, `burstDuration`, `normalDuration`.
+
+#### FaultConfig
+
+A list of configured faults with an "+ Add fault" button.
+
+Each fault entry shows a summary row (e.g., "DB crash at t=15s for 5s") with edit and delete buttons.
+
+Clicking "Add fault" or edit opens a small form:
+- Target: dropdown of all node IDs in the topology
+- Fault type: dropdown (crash / latency-spike / error-rate / hang / cpu-stress / memory-pressure)
+- Timing: radio (deterministic / probabilistic / conditional)
+  - Deterministic: `atTime` (number, ms)
+  - Probabilistic: `probability` (number), `checkInterval` (number, ms)
+  - Conditional: `metric` (dropdown), `operator` (dropdown), `threshold` (number)
+- Duration: radio (fixed / permanent)
+  - Fixed: `duration` (number, ms)
+
+Each configured fault maps to a `FaultSpec` entry in the topology JSON.
+
+Also show a "Presets" section with buttons for the built-in scenarios (Cache Stampede, DB Failover, Traffic Spike). Clicking a preset auto-populates the fault list with the scenario's faults. Presets are only shown if the topology has the required node types (e.g., cache stampede requires a cache node).
+
+#### SimulationControls
+
+| Button | State | Action |
+|--------|-------|--------|
+| Run (▶) | Shown when `status === "idle"` or `"complete"` | Call `useSimulation.run(topology)` — serialize topology first using T-028 |
+| Pause (⏸) | Shown when `status === "running"` | Call `useSimulation.pause()` |
+| Resume (▶) | Shown when `status === "paused"` | Call `useSimulation.resume()` |
+| Stop (⏹) | Shown when `status === "running"` or `"paused"` | Call `useSimulation.stop()` |
+| Step (⏩) | Shown when `status === "paused"` | Call `useSimulation.step(100)` |
+
+Also show:
+- Progress bar (0-100%) from `useSimulation.progress`
+- Events processed counter from `useSimulation.progress`
+- Error message if `status === "error"`
+
+#### Speed Control
+
+A segmented button group shown when `status === "running"` or `"paused"`:
+
+| Button | Value | Meaning |
+|--------|-------|---------|
+| `1×`   | 1     | Real-time — snapshots emitted at roughly the pace of simulated time |
+| `5×`   | 5     | 5x accelerated |
+| `10×`  | 10    | 10x accelerated |
+| `Max`  | 0     | Batch mode — engine runs at full speed, no throttling |
+
+Default: `Max` (batch). Clicking a button calls `useSimulation.setPlaybackSpeed(value)`. The currently active speed is highlighted. Speed can be changed mid-run without restarting.
+
+**AC**:
+- [ ] Workload pattern dropdown shows all 6 patterns
+- [ ] Selecting "Spike" reveals spike-specific fields, selecting "Constant" hides them
+- [ ] Seed field auto-generates a random seed if left empty
+- [ ] Faults can be added, edited, and deleted
+- [ ] Each fault row shows a human-readable summary
+- [ ] Run button serializes the topology and starts the simulation
+- [ ] Run button is disabled if topology has validation errors (show error tooltip)
+- [ ] Progress bar updates during simulation
+- [ ] Pause/Resume/Stop buttons appear/disappear based on simulation status
+- [ ] Preset buttons auto-populate fault list
+- [ ] Preset buttons are disabled if required node types are missing
+- [ ] Speed control shows `[1×] [5×] [10×] [Max]` segmented buttons during simulation
+- [ ] Clicking a speed button calls `setPlaybackSpeed()` and highlights the active selection
+- [ ] Speed defaults to `Max` (batch mode)
+- [ ] Speed can be changed mid-run without restarting the simulation
+
+---
+
+### T-035: Build Results Tray — Summary & Per-Node views
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-020 (SimulationOutput), T-026 (useSimulation — provides `result`) |
+| **Files** | `src/ui/components/ResultsTray.tsx`, `src/ui/components/MetricsDashboard.tsx`, `src/ui/components/PerNodeTable.tsx`, `src/ui/components/SLOBreachList.tsx` |
+| **Size** | M |
+
+**Context**: After the simulation completes, a bottom tray slides up showing tabbed results. This ticket covers the tray container and the first two tabs (Summary and Per-Node). Other tabs are separate tickets.
+
+Refer to `ui.md` Sections 3.4 (Summary tab) and 3.4 (Per-Node tab) for the exact layouts.
+
+**What to build**:
+
+#### ResultsTray
+
+A collapsible bottom panel that:
+- Is hidden when `useSimulation.status !== "complete"`
+- Slides up when simulation completes
+- Has tabs: Summary | Per-Node | Traces | Failures | Cost
+- Can be collapsed/expanded by the user
+- Tabs for Traces, Failures, and Cost render placeholder "Coming soon" text until their tickets are built (T-036, T-037, T-038)
+
+#### MetricsDashboard (Summary tab)
+
+Renders 8 metric cards in a 4x2 grid from `SimulationOutput.summary`:
+
+| Card | Value source | Highlight condition |
+|------|-------------|-------------------|
+| P50 Latency | `summary.latency.p50` | — |
+| P95 Latency | `summary.latency.p95` | — |
+| P99 Latency | `summary.latency.p99` | Red if exceeds any node's `slo.latencyP99` |
+| Throughput | `summary.throughput` | — |
+| Error Rate | `summary.errorRate` | Red if > 5% |
+| Total Requests | `summary.totalRequests` | — |
+| Rejected Count | `summary.rejectedRequests` | Red if > 0 |
+| Availability | `1 - summary.errorRate` | Red if < 99% |
+
+Below the cards, show:
+- Little's Law check result: "✓ All nodes within 10%" or "⚠ Node X deviates by Y%"
+- Seed + reproducibility indicator
+
+Each metric card should use monospace font for the number, label above, and optional delta/breach indicator.
+
+#### PerNodeTable (Per-Node tab)
+
+A sortable table from `SimulationOutput.perNode`:
+
+| Column | Source | Sortable? |
+|--------|--------|-----------|
+| Node | node label | Yes (alpha) |
+| Utilization % | `utilization` | Yes |
+| Avg Queue | `avgQueueLength` | Yes |
+| RPS | `throughput` | Yes |
+| Rejected | `totalRejected` | Yes |
+| P99 | per-node P99 latency | Yes |
+
+Default sort: by utilization descending (bottleneck first).
+
+Highlight the row of the most utilized node with a "← bottleneck" indicator.
+
+Clicking a row should select that node on the canvas (scroll to it, highlight it).
+
+#### SLOBreachList
+
+A small list below the per-node table showing `SimulationOutput.sloBreaches[]`:
+- Each row: node name, metric, target value, actual value, severity
+- Only visible if breaches exist
+
+**AC**:
+- [ ] Tray is hidden before simulation runs
+- [ ] Tray appears when simulation completes
+- [ ] Summary tab shows 8 metric cards with correct values
+- [ ] P99 card turns red when SLO is breached
+- [ ] Per-node table is sortable by all columns
+- [ ] Default sort is utilization descending
+- [ ] Bottleneck row is highlighted
+- [ ] Clicking a per-node row selects that node on the canvas
+- [ ] SLO breaches are shown when present
+- [ ] Little's Law result is displayed
+- [ ] Tray can be collapsed and expanded
+
+---
+
+### T-036: Build Results Tray — Waterfall Trace View
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-018 (request tracer data), T-035 (results tray container) |
+| **File** | `src/ui/components/WaterfallView.tsx` |
+| **Size** | M |
+
+**Context**: The Traces tab shows a sampled request's journey through the system as a horizontal waterfall chart — like Chrome DevTools' network panel but for simulated requests.
+
+Refer to `ui.md` Section 3.4 (Tab: Traces) for the exact layout.
+
+**What to build**:
+
+A component that renders one `RequestTrace` at a time from `SimulationOutput.traces[]`.
+
+**Layout**:
+- Time axis at the top (0ms to totalLatency)
+- One row per node visited in the trace
+- Each row has a horizontal bar split into segments:
+  - **Edge latency** (gap before the bar — time spent on the network)
+  - **Queue wait** (lighter/hatched segment — time waiting for a worker)
+  - **Processing** (solid segment — time being processed)
+- The bar's left edge = span.start (relative to request creation)
+- The bar's right edge = span.end
+- Each row shows the node name and timing breakdown as text
+
+**Controls**:
+- "◀ Prev trace" / "Next trace ▶" buttons to cycle through sampled traces
+- "Show P99 trace" button — jump to the trace with the highest total latency
+- Trace summary at top: request ID, total latency, status (success/timeout/rejected)
+
+**Color coding**:
+- Queue wait segments: `#525252` (gray)
+- Processing segments: use the node's state color (green if fast, orange if slow relative to its expected distribution)
+- Edge latency gaps: empty (just whitespace)
+
+**Scale**: The time axis should auto-scale to fit the trace. Short traces (10ms) and long traces (2000ms) should both be readable.
+
+**AC**:
+- [ ] Renders a waterfall with one row per node in the trace
+- [ ] Queue wait and processing segments are visually distinct
+- [ ] Edge latency is visible as gaps between bars
+- [ ] Time axis scales to fit the trace duration
+- [ ] Prev/Next buttons cycle through traces
+- [ ] "Show P99 trace" jumps to the slowest trace
+- [ ] Summary shows request ID, total latency, and status
+- [ ] Handles traces with 1 node (trivial) and 6+ nodes (long chain)
+
+---
+
+### T-037: Build Results Tray — Failure Cascade View
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-021 (causal graph data), T-035 (results tray container) |
+| **File** | `src/ui/components/CausalGraphView.tsx` |
+| **Size** | M |
+
+**Context**: The Failures tab shows the causal chain when cascading failures occurred. It answers: "what broke first, and how did it cascade?"
+
+Refer to `ui.md` Section 3.4 (Tab: Failures) for the exact layout.
+
+**What to build**:
+
+A component that renders `SimulationOutput.causalGraph`.
+
+**Layout**: A vertical timeline showing each propagation step:
+
+```
+t=12.0s   DB ──────[crash]─────────────────── ✗ FAILED
+             │
+t=12.5s     └──► API ──[timeout_cascade]──── ⚠ DEGRADED
+                   │
+t=14.0s            └──► Gateway ──[queue_full] ⚠ DEGRADED
+```
+
+Each row shows:
+- Timestamp (sim-time of the event)
+- Source node → target node
+- Effect label (crash, timeout_cascade, queue_saturation, retry_amplification, 503_errors)
+- Severity icon (✗ FAILED or ⚠ DEGRADED)
+
+**Root cause highlight**: The first row (root cause) should be visually prominent — larger text, red background.
+
+**Impact summary** below the timeline:
+- Total nodes affected
+- Cascade depth (longest path from root)
+- Time from first failure to last affected node
+
+**Empty state**: If no failures occurred during the simulation, show: "No failures detected. Your system handled the workload without cascading issues."
+
+**Interaction**: Clicking any node name in the cascade should select that node on the canvas and scroll to it.
+
+**AC**:
+- [ ] Renders the cascade as a vertical timeline
+- [ ] Root cause is visually highlighted
+- [ ] Each step shows timestamp, nodes, effect, and severity
+- [ ] Impact summary shows node count, depth, and duration
+- [ ] Empty state shown when no failures occurred
+- [ ] Clicking a node name selects it on the canvas
+- [ ] Handles multiple independent root causes (show them as separate trees)
+
+---
+
+### T-038: Build Results Tray — Cost & Anti-Pattern views
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-031 (cost calculator), T-030 (anti-pattern detector), T-035 (results tray container) |
+| **Files** | `src/ui/components/CostPanel.tsx`, `src/ui/components/AntiPatternPanel.tsx` |
+| **Size** | S |
+
+**Context**: The Cost tab shows estimated cloud costs. Anti-pattern warnings can appear either in the Cost tab or as a separate section in the Inspector panel. Both are lightweight views over pre-computed data.
+
+Refer to `ui.md` Section 3.4 (Tab: Cost) for the layout.
+
+**What to build**:
+
+#### CostPanel
+
+A table rendered from `CostEstimate` (output of T-031's `calculateCost()`):
+
+| Column | Source |
+|--------|--------|
+| Node | `perNode[id].label` |
+| Type | mapped cloud service name (e.g., "ALB", "RDS Postgres", "ECS Fargate") |
+| Replicas | `resources.replicas` |
+| $/hour | `perNode[id].hourlyCost` |
+| $/month | `hourlyCost * 730` |
+
+Footer row: TOTAL across all nodes.
+
+Provider selector: dropdown (AWS / GCP / Azure) — re-runs `calculateCost` with the selected provider.
+
+Note: Cost can be computed without running a simulation — it only needs the topology. Show this tab even before simulation if the user navigates to it.
+
+#### AntiPatternPanel
+
+A list of warnings from `detectAntiPatterns()` (T-030):
+
+Each warning shows:
+- Severity badge (⚠ warning / 🔴 critical)
+- Pattern name (e.g., "Single Point of Failure")
+- Description (e.g., "DB has 1 replica but 3 services depend on it")
+- Recommendation (e.g., "Add at least 1 read replica")
+- Affected nodes (clickable — selects on canvas)
+
+Empty state: "No anti-patterns detected. ✓"
+
+Note: Like cost, this is a static analysis — it runs against the topology, not the simulation output. It can be shown before running a simulation.
+
+**AC**:
+- [ ] Cost table shows all nodes with correct $/hour and $/month
+- [ ] Total row sums correctly
+- [ ] Provider dropdown switches between AWS/GCP/Azure pricing
+- [ ] Cost is available before running a simulation
+- [ ] Anti-pattern warnings show severity, description, and recommendation
+- [ ] Clicking affected node names selects them on the canvas
+- [ ] Empty state shown when no anti-patterns detected
+
+---
+
+### T-039: Build Node Palette (draggable component library)
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-001 (types — needs `ComponentType`, `ComponentCategory`) |
+| **File** | `src/ui/components/NodePalette.tsx` |
+| **Size** | S |
+
+**Context**: The left panel of the workspace shows a categorized list of node types that users can drag onto the canvas. Currently nodes exist on the canvas but there's no structured way to add them by type.
+
+**What to build**:
+
+A collapsible sidebar listing all node types grouped by `ComponentCategory`:
+
+```
+▼ Compute
+    API Server
+    Microservice
+    Serverless Function
+    Background Worker
+    ...
+▼ Network
+    Load Balancer (L7)
+    API Gateway
+    CDN
+    ...
+▼ Storage
+    Relational DB
+    Cache
+    Object Storage
+    ...
+▼ Messaging
+    Queue
+    Pub/Sub
+    Stream
+    ...
+(remaining categories collapsed by default)
+```
+
+**Each entry**:
+- Icon (per category — use the iconography from `ui.md` Section 7)
+- Label (human-readable name derived from the `ComponentType` slug)
+- Draggable via React DnD or React Flow's built-in drag API
+
+**Drag behavior**: When dropped on the canvas, creates a new React Flow node with:
+- `type` set to the `ComponentType` slug
+- `category` set to the parent category
+- `label` set to a default name (e.g., "API Server 1", auto-incrementing)
+- All other fields use defaults (from T-028's default table)
+- Position = drop coordinates
+
+**Search/filter**: A text input at the top that filters the list by name (e.g., typing "cache" shows only cache-related types).
+
+Only show the most commonly used types by default (~30). Show a "Show all (113)" toggle to reveal the complete taxonomy.
+
+**AC**:
+- [ ] All 113 component types are available
+- [ ] Types are grouped by category with collapsible sections
+- [ ] Dragging a type onto the canvas creates a correctly-typed node
+- [ ] New node gets an auto-incremented default label
+- [ ] Search/filter works by name
+- [ ] Default view shows ~30 common types
+- [ ] "Show all" toggle reveals the full list
+
+---
+
+## Phase 11 — CLI
+
+### T-040: Build CLI runner (`dsds` command)
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-011 (engine), T-020 (output), T-003 (validator) |
+| **Files** | `src/cli/index.ts`, `src/cli/commands/run.ts`, `src/cli/commands/show.ts`, `src/cli/commands/validate.ts`, `src/cli/commands/inspect.ts`, `src/cli/formatters/table.ts`, `src/cli/formatters/topology.ts` |
+| **Size** | L |
+
+**Context**: The simulation engine is pure TypeScript with no DOM dependencies. It can run directly in Node.js via a CLI tool called `dsds`. This gives developers a terminal-based workflow for running simulations, validating topologies, and inspecting results without needing the UI.
+
+Refer to `ui.md` Section 4 for the full CLI specification including output formats.
+
+**What to build**:
+
+Use a CLI framework (e.g., `commander`, `yargs`, or `citty`) to implement these commands:
+
+#### `dsds run <file>`
+
+1. Read and parse the topology JSON file.
+2. Validate with `validateTopology()` — print errors and exit 1 if invalid.
+3. Create `SimulationEngine(topology)` with seed/duration overrides from flags.
+4. Run the simulation. During execution, show a progress bar: `Simulating... ████████░░░░  68%  (412,000 events)`
+5. Print the formatted output (see `ui.md` Section 4.1 for exact format):
+   - Header: topology name, node/edge count, seed, duration, workload
+   - Latency section: P50, P90, P95, P99 (flag SLO breaches)
+   - Per-node table: Node, Util%, Avg Queue, RPS, Rejected, P99
+   - Checks section: Little's Law, SLO breaches, seed
+
+**Flags**:
+- `--seed <string>` — override the topology's seed
+- `--duration <ms>` — override simulation duration
+- `--json` — output raw `SimulationOutput` as JSON (for piping to `jq`)
+- `--live` — show live-updating table during simulation (uses ANSI escape codes to overwrite lines)
+
+#### `dsds validate <file>`
+
+1. Parse the JSON file.
+2. Run `validateTopology()`.
+3. Print errors (with paths) or "✓ Topology is valid".
+4. Print warnings (disconnected nodes, missing configs).
+5. Run `detectAntiPatterns()` and print any findings.
+6. Exit 0 if valid, exit 1 if errors.
+
+#### `dsds show <file>`
+
+Print a text-based visualization of the topology graph (see `ui.md` Section 4.2).
+- Show nodes as boxes with label, type, and worker/queue counts.
+- Show edges as arrows with protocol and latency.
+- Print summary: node count, edge count, source nodes, sink nodes.
+
+For v1, a simple list format is acceptable:
+```
+Nodes:
+  [Users] (source)
+  [Gateway] (load-balancer-l7) — 100 workers, 500 queue
+  [API] (microservice) — 20 workers, 200 queue
+  [DB] (relational-db) — 50 workers, 100 queue
+
+Edges:
+  Users → Gateway (https, ~1ms, same-dc)
+  Gateway → API (grpc, ~1ms, same-dc)
+  API → DB (tcp, ~2ms, same-dc)
+```
+
+Full ASCII box rendering is a stretch goal.
+
+#### `dsds inspect <file> --node <id>` / `--edge <id>`
+
+Print detailed configuration for a single node or edge (see `ui.md` Section 4.2 for format).
+
+#### Formatters
+
+Create reusable formatter functions:
+- `formatTable(headers: string[], rows: string[][]): string` — aligned columns with `|` separators
+- `formatMetric(label: string, value: number, unit: string, breach?: boolean): string`
+- `formatProgressBar(percent: number, width: number): string`
+
+**AC**:
+- [ ] `dsds run topology.json` produces formatted output matching `ui.md` Section 4.1
+- [ ] `dsds run --json` outputs valid JSON parseable by `jq`
+- [ ] `dsds run --seed "test"` overrides the seed and produces deterministic output
+- [ ] `dsds validate` prints path-specific errors for an invalid topology
+- [ ] `dsds validate` exits 0 for valid, 1 for invalid
+- [ ] `dsds show` prints a readable topology listing
+- [ ] `dsds inspect --node "db"` prints detailed node config
+- [ ] Progress bar shows during simulation run
+- [ ] SLO breaches are flagged in the output
+- [ ] Handles file-not-found and JSON parse errors gracefully
+- [ ] Unit tests for formatter functions
+
+---
+
+### T-041: Add `--live` mode to CLI with ANSI live-updating display
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-040 (base CLI), T-019 (time-series snapshots) |
+| **File** | `src/cli/commands/run-live.ts` |
+| **Size** | M |
+
+**Context**: The `--live` flag makes the CLI show a live-updating table during the simulation, similar to `htop` or `docker stats`. This gives terminal users the same real-time feedback that the UI gets via canvas coloring.
+
+Refer to `ui.md` Section 4.3 for the exact format.
+
+**What to build**:
+
+When `dsds run topology.json --live` is used:
+
+1. Use ANSI escape codes (`\x1b[2J` clear screen, `\x1b[H` cursor home) to overwrite the terminal output on each snapshot.
+2. Subscribe to the engine's `onSnapshot` callback.
+3. On each snapshot, render:
+
+```
+t=15.2s  ████████████████░░░░░░░░░░  25%
+
+Node         Status    Util%   Queue    RPS    Errors
+──────────   ───────   ─────   ─────   ────   ──────
+Gateway      ● OK       42%    3/500    980    0.0%
+API          ◐ WARM     85%   42/200    970    0.3%
+DB           ◉ HOT      97%  148/100    500    2.1%  ← bottleneck
+
+Edges        Latency   Throughput
+──────────   ───────   ──────────
+GW → API      2.3ms       970/s
+API → DB      4.1ms       500/s
+```
+
+**Status indicators**:
+- `●` OK: utilization < 60% (green ANSI color)
+- `◐` WARM: 60-85% (yellow)
+- `◉` HOT: 85-95% (orange/red)
+- `✗` FAIL: > 95% or status === "failed" (red)
+
+**Interactivity** (if the terminal supports raw mode):
+- `q` to stop the simulation early
+- `p` to pause/resume
+
+After the simulation completes, clear the live display and print the normal final output (same as `dsds run` without `--live`).
+
+**AC**:
+- [ ] Live display updates every snapshot interval
+- [ ] Node status indicators use correct symbols and colors
+- [ ] Bottleneck node is flagged
+- [ ] Progress bar updates
+- [ ] `q` key stops the simulation
+- [ ] Final output prints after live display clears
+- [ ] Falls back gracefully in terminals that don't support ANSI
+
+---
+
+### T-042: Add `dsds compare` and `dsds cost` and `dsds lint` commands
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-040 (base CLI), T-032 (comparator), T-031 (cost calculator), T-030 (anti-pattern detector) |
+| **Files** | `src/cli/commands/compare.ts`, `src/cli/commands/cost.ts`, `src/cli/commands/lint.ts` |
+| **Size** | S |
+
+**Context**: Additional CLI commands that use the analysis modules. These are thin wrappers — the logic is in the analysis modules; these commands just parse args, call the function, and format output.
+
+**What to build**:
+
+#### `dsds compare <a.json> <b.json>`
+
+1. Run both simulations (sequentially, same seed unless overridden).
+2. Call `compareDesigns(outputA, outputB)` from T-032.
+3. Print side-by-side comparison:
+
+```
+Metric          Design A    Design B    Delta      Winner
+────────────    ────────    ────────    ─────      ──────
+P99 Latency     890ms       320ms       -64%       B ✓
+Throughput      946/s       1420/s      +50%       B ✓
+Error Rate      2.07%       0.12%       -94%       B ✓
+```
+
+4. Print the summary sentence from `DesignComparison.summary`.
+
+#### `dsds cost <file> --provider <aws|gcp|azure>`
+
+1. Parse the topology (no simulation needed).
+2. Call `calculateCost(topology, provider)` from T-031.
+3. Print cost table (same format as `ui.md` Section 3.4 Cost tab).
+
+#### `dsds lint <file>`
+
+1. Parse the topology.
+2. Call `detectAntiPatterns(topology)` from T-030.
+3. Print each warning with severity, description, affected nodes, and recommendation.
+4. Exit 0 if no critical issues, exit 1 if any critical anti-patterns found.
+
+**AC**:
+- [ ] `dsds compare` runs both simulations and prints a diff table
+- [ ] `dsds cost` prints per-node and total cost without running a simulation
+- [ ] `dsds cost --provider gcp` uses GCP pricing
+- [ ] `dsds lint` prints anti-pattern warnings
+- [ ] `dsds lint` exits 1 if critical anti-patterns found
+- [ ] All commands handle file-not-found gracefully
+
+---
+
+### T-043: Topology State Store (`useTopologyStore`)
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-001 (types), T-003 (validator) |
+| **File** | `src/ui/store/topologyStore.ts` |
+| **Size** | M |
+
+**Context**: Today, topology state is scattered — React Flow holds node/edge positions, the inspector edits individual fields, the serializer (T-028) converts everything at "Run" time, and none of these share state. For the JSON Topology Viewer (T-044) and import/export (T-046) to work, we need a **single canonical store** that all views read from and write to.
+
+This store replaces T-028's role as the "serializer hook". Instead of serializing on demand, the store IS the topology state. `exportTopology()` is just a method that formats the current state as `TopologyJSON`.
+
+**What to build**:
+
+```typescript
+// src/ui/store/topologyStore.ts
+import { create } from "zustand";
+
+interface TopologyStore {
+  // State
+  nodes: Map<string, ComponentNode>;
+  edges: Map<string, EdgeDefinition>;
+  workload: WorkloadProfile;
+  faults: FaultSpec[];
+  globalConfig: GlobalConfig;
+  validationResult: ValidationResult | null; // always-live validation
+
+  // Derived (computed from canonical state)
+  rfNodes: ReactFlowNode[];  // React Flow reads these
+  rfEdges: ReactFlowEdge[];  // React Flow reads these
+
+  // Node actions
+  addNode: (node: ComponentNode) => void;
+  updateNode: (id: string, patch: Partial<ComponentNode>) => void;
+  removeNode: (id: string) => void;
+
+  // Edge actions
+  addEdge: (edge: EdgeDefinition) => void;
+  updateEdge: (id: string, patch: Partial<EdgeDefinition>) => void;
+  removeEdge: (id: string) => void;
+
+  // Config actions
+  setWorkload: (workload: WorkloadProfile) => void;
+  setGlobalConfig: (config: Partial<GlobalConfig>) => void;
+  addFault: (fault: FaultSpec) => void;
+  updateFault: (index: number, fault: FaultSpec) => void;
+  removeFault: (index: number) => void;
+
+  // Bulk actions
+  importTopology: (json: TopologyJSON) => void;  // load from JSON
+  exportTopology: () => TopologyJSON;             // serialize to JSON
+  reset: () => void;
+
+  // React Flow sync
+  onNodesChange: (changes: NodeChange[]) => void;   // RF callback
+  onEdgesChange: (changes: EdgeChange[]) => void;    // RF callback
+  onConnect: (connection: Connection) => void;        // RF callback
+}
+```
+
+**Implementation details**:
+
+1. **Live validation**: On every mutation (any `add/update/remove` action), re-run the validator from T-003 and store the result. This means the UI can always show "✓ Valid" or "✗ 3 errors" without waiting for the user to press Run.
+
+2. **React Flow sync**: The store converts its canonical `nodes: Map<id, ComponentNode>` into `rfNodes: ReactFlowNode[]` as derived state. When React Flow fires `onNodesChange` (drag, resize), the store updates positions in its canonical state. This is the two-way bridge:
+   - User drags node on canvas → `onNodesChange` → store updates `nodes.get(id).position`
+   - User edits workers in inspector → `updateNode(id, { queue: { workers: 200 } })` → derived `rfNodes` re-renders canvas
+
+3. **`importTopology(json)`**: Validates with T-003, then replaces all state. If positions are present, use them. If not, auto-layout (dagre) is handled by the caller (T-045).
+
+4. **`exportTopology()`**: Reads the current state and formats it as `TopologyJSON`. This replaces what T-028's `serializeTopology()` did, but now it's trivial because the state is already in `ComponentNode`/`EdgeDefinition` form.
+
+5. **Default values**: When a node is added from the palette (T-039) or canvas, apply the same defaults that T-028 specifies (workers: 10, capacity: 100, etc.).
+
+**AC**:
+- [ ] Store holds all topology state (nodes, edges, workload, faults, globalConfig)
+- [ ] `addNode` / `updateNode` / `removeNode` work correctly and trigger re-validation
+- [ ] `addEdge` / `updateEdge` / `removeEdge` work correctly and trigger re-validation
+- [ ] `validationResult` updates automatically after every mutation
+- [ ] `rfNodes` / `rfEdges` derived state stays in sync with canonical state
+- [ ] `onNodesChange` / `onEdgesChange` update canonical state from React Flow events
+- [ ] `importTopology(json)` replaces all state and validates
+- [ ] `exportTopology()` returns a valid `TopologyJSON`
+- [ ] `reset()` clears all state to defaults
+- [ ] Multiple components can read/write the store without stale state
+
+---
+
+### T-044: JSON Topology Viewer Panel
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-043 (topology store), T-001 (types) |
+| **File** | `src/ui/components/TopologyViewer.tsx` |
+| **Size** | L |
+
+**Context**: Users need to see the full topology structure at a glance — not one node at a time (inspector) or just visually (canvas). The JSON Topology Viewer is like Chrome DevTools' object inspector or Figma's "Dev Mode": a structured tree view of the entire topology that is both readable and editable.
+
+This is NOT a raw text editor (no Monaco, no free-form JSON editing). It is a structured tree where users expand sections, click values to edit inline, and see validation errors immediately.
+
+Refer to `ui.md` Section 3.X for the layout mockup.
+
+**What to build**:
+
+```
+┌─ Topology Viewer ──────────────────────────────────────┐
+│  [Copy JSON]  [Download]  [Upload]   ✓ Valid (2 warns) │
+│ ─────────────────────────────────────────────────────── │
+│  🔍 [Search topology...]                                │
+│                                                          │
+│  ▾ nodes                                    [4 nodes]    │
+│    ▾ gateway                                             │
+│        id: "gateway"                                     │
+│        type: "load-balancer-l7"                          │
+│        ▸ queue: { workers: 100, capacity: 500, … }      │
+│        ▸ processing: { distribution: "log-normal", … }  │
+│        ▸ resilience: { circuitBreaker: { … } }          │
+│        ▸ slo: { latencyP99: 500, availability: 99.9 }   │
+│    ▸ api                                                 │
+│    ▸ cache                                               │
+│    ▸ db                                                  │
+│                                                          │
+│  ▾ edges                                    [3 edges]    │
+│    ▾ gateway → api                                       │
+│        source: "gateway"  target: "api"                  │
+│        mode: "synchronous"  protocol: "grpc"             │
+│        ▸ latency: { distribution: "log-normal", … }     │
+│    ▸ api → cache                                         │
+│    ▸ api → db                                            │
+│                                                          │
+│  ▾ workload                                              │
+│        pattern: "poisson"                                │
+│        baseRps: [1000]  ← click to edit                  │
+│        duration: 60000                                   │
+│                                                          │
+│  ▾ faults                                   [2 faults]   │
+│    ▸ 0: DB crash at t=15000ms                            │
+│    ▸ 1: API latency spike at t=30000ms                   │
+│                                                          │
+│  ▸ globalConfig                                          │
+│                                                          │
+│ ─────────────────────────────────────────────────────── │
+│  ⚠ Node "db" has 1 replica and is a critical dependency │
+│  ⚠ No timeout configured on node "cache"                │
+└──────────────────────────────────────────────────────────┘
+```
+
+**Panel placement**: Toggleable via a `[{ } JSON]` button in the top toolbar. Opens as:
+- A right-side panel (replacing inspector when open), OR
+- A bottom panel (alongside results tray), OR
+- A slide-over panel
+
+Use a tab or toggle so the user can switch between Inspector view and JSON view in the same panel slot.
+
+**Features**:
+
+1. **Tree structure**: Root keys are `nodes`, `edges`, `workload`, `faults`, `globalConfig`. Each is expandable. Nodes and edges are listed by their `id` or label.
+
+2. **Inline editing**: Click any leaf value to switch to an edit input. Press Enter or blur to save. The edit calls the corresponding `useTopologyStore` action (e.g., editing `nodes.gateway.queue.workers` calls `updateNode("gateway", { queue: { workers: newValue } })`).
+
+3. **Type-aware inputs**: Numbers show number inputs, strings show text inputs, enums (distribution type, protocol, mode) show dropdowns, booleans show checkboxes.
+
+4. **Clickable rows**: Clicking a node name selects it on the canvas and opens the inspector. Clicking an edge name does the same.
+
+5. **Search/filter**: A search box at the top filters the tree to show only matching paths (e.g., typing "workers" shows all nodes' worker counts).
+
+6. **Validation display**: Warnings and errors from `store.validationResult` are shown at the bottom of the panel. Each warning is clickable → highlights the relevant node/edge.
+
+7. **Badge counts**: Section headers show counts: `nodes [4]`, `edges [3]`, `faults [2]`.
+
+**AC**:
+- [ ] Panel opens/closes via toggle button
+- [ ] All topology sections are expandable/collapsible
+- [ ] Leaf values are editable inline (click to edit, Enter to save)
+- [ ] Edits sync to the canvas and inspector immediately
+- [ ] Enum fields show dropdowns (not free-text)
+- [ ] Number fields validate numeric input
+- [ ] Clicking a node/edge row selects it on canvas
+- [ ] Search filters the tree to matching paths
+- [ ] Validation warnings/errors display at bottom
+- [ ] Badge counts update when nodes/edges/faults are added/removed
+- [ ] Copy/Download/Upload buttons work (delegates to T-046)
+
+---
+
+### T-045: Topology Deserializer (JSON → Canvas)
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-001 (types), T-003 (validator), T-043 (topology store) |
+| **File** | `src/ui/hooks/useTopologyDeserializer.ts` |
+| **Size** | M |
+
+**Context**: T-028 serializes React Flow → TopologyJSON (export). This ticket builds the reverse: TopologyJSON → topology store → canvas (import). This enables loading saved topologies, sharing between teammates, and pasting JSON from documentation or ChatGPT.
+
+**What to build**:
+
+```typescript
+export function useTopologyDeserializer() {
+  const store = useTopologyStore();
+
+  return {
+    /**
+     * Import a TopologyJSON object into the store.
+     * Returns validation result (may succeed with warnings).
+     */
+    importFromJSON: (json: unknown): ImportResult => {
+      // 1. Parse and validate with T-003 validator
+      const validation = validateTopology(json);
+      if (!validation.valid) {
+        return { success: false, errors: validation.errors };
+      }
+
+      const topology = validation.data as TopologyJSON;
+
+      // 2. Check if positions exist on nodes
+      const hasPositions = topology.nodes.every(
+        (n) => n.position && n.position.x !== undefined
+      );
+
+      // 3. If no positions, compute auto-layout
+      if (!hasPositions) {
+        const positioned = autoLayout(topology.nodes, topology.edges);
+        topology.nodes = positioned;
+      }
+
+      // 4. Import into store
+      store.importTopology(topology);
+
+      return {
+        success: true,
+        warnings: validation.warnings ?? [],
+        nodesImported: topology.nodes.length,
+        edgesImported: topology.edges.length,
+      };
+    },
+
+    /**
+     * Import from a JSON string (e.g., pasted from clipboard).
+     */
+    importFromString: (jsonString: string): ImportResult => {
+      try {
+        const parsed = JSON.parse(jsonString);
+        return importFromJSON(parsed);
+      } catch (e) {
+        return { success: false, errors: [{ path: "", message: "Invalid JSON syntax" }] };
+      }
+    },
+
+    /**
+     * Import from a File object (from file picker).
+     */
+    importFromFile: async (file: File): Promise<ImportResult> => {
+      const text = await file.text();
+      return importFromString(text);
+    },
+  };
+}
+
+interface ImportResult {
+  success: boolean;
+  errors?: ValidationError[];
+  warnings?: string[];
+  nodesImported?: number;
+  edgesImported?: number;
+}
+```
+
+**Auto-layout**: When imported topology has no positions (e.g., hand-written JSON or CLI-generated), use a directed graph layout algorithm. Options:
+- **dagre** (recommended — well-tested, tree/DAG layout)
+- **elk** (more flexible but heavier)
+- Simple heuristic: topological sort → assign x by depth, y by sibling index
+
+This can be a separate utility function: `autoLayout(nodes: ComponentNode[], edges: EdgeDefinition[]): ComponentNode[]`.
+
+**AC**:
+- [ ] `importFromJSON` validates input before importing
+- [ ] Invalid JSON returns errors without modifying store state
+- [ ] Valid JSON with warnings imports successfully and returns warnings
+- [ ] Nodes with positions render at their saved positions on canvas
+- [ ] Nodes without positions are auto-laid out using dagre
+- [ ] `importFromString` handles invalid JSON syntax gracefully
+- [ ] `importFromFile` reads a `.json` file and imports it
+- [ ] After import, canvas shows all nodes and edges
+- [ ] After import, inspector and JSON viewer reflect imported state
+
+---
+
+### T-046: Import/Export Controls
+
+| Field | Value |
+|-------|-------|
+| **Blocked by** | T-043 (topology store), T-045 (deserializer) |
+| **File** | `src/ui/components/ImportExportControls.tsx` |
+| **Size** | S |
+
+**Context**: Users need to save and load topologies. This is a small toolbar component with four buttons and a validation badge. It appears in the JSON viewer header and/or the scenario bar.
+
+**What to build**:
+
+```typescript
+export function ImportExportControls() {
+  const store = useTopologyStore();
+  const { importFromFile, importFromString } = useTopologyDeserializer();
+
+  return (
+    <div className="import-export-controls">
+      <button onClick={handleDownload}>Download JSON</button>
+      <button onClick={handleUpload}>Upload JSON</button>
+      <button onClick={handleCopy}>Copy JSON</button>
+      <button onClick={handlePaste}>Paste JSON</button>
+      <ValidationBadge result={store.validationResult} />
+    </div>
+  );
+}
+```
+
+**Button behaviors**:
+
+| Button | Action |
+|--------|--------|
+| **Download JSON** | `store.exportTopology()` → `JSON.stringify(topology, null, 2)` → create Blob → trigger download as `topology.json` |
+| **Upload JSON** | Open file picker (accept `.json`) → read file → `importFromFile(file)` → show success/error toast |
+| **Copy JSON** | `store.exportTopology()` → `navigator.clipboard.writeText(JSON.stringify(...))` → show "Copied!" toast |
+| **Paste JSON** | `navigator.clipboard.readText()` → `importFromString(text)` → show success/error toast |
+
+**Validation badge**: Shows `✓ Valid` (green) or `✗ N errors` (red) or `⚠ N warnings` (yellow). Clicking it scrolls to/opens the validation section in the JSON viewer.
+
+**Confirmation on import**: When topology already has content, show a confirmation dialog: "This will replace your current topology. Continue?" with Cancel/Replace buttons.
+
+**AC**:
+- [ ] Download button saves a valid `.json` file
+- [ ] Downloaded file can be uploaded back and produces identical topology
+- [ ] Upload button opens file picker and loads valid JSON
+- [ ] Upload shows error toast on invalid JSON (not a crash)
+- [ ] Copy button copies topology JSON to clipboard
+- [ ] Paste button reads clipboard and imports topology
+- [ ] Confirmation dialog appears before replacing existing topology
+- [ ] Validation badge shows correct status (valid/warnings/errors)
+- [ ] Validation badge updates in real-time as topology changes
+
+---
+
 ## Ticket Index
+
+### By Phase
 
 ### By Phase
 
@@ -1949,8 +2996,10 @@ Generate a human-readable `summary` string highlighting the most significant dif
 | 5 — Resilience | T-015, T-016 |
 | 6 — Metrics & Output | T-017, T-018, T-019, T-020, T-021 |
 | 7 — Scenarios | T-022, T-023, T-024 |
-| 8 — UI Integration | T-025, T-026, T-027, T-028 |
-| 9 — Advanced | T-029, T-030, T-031, T-032 |
+| 8 — UI Hooks | T-025, T-026, T-027, T-028 |
+| 9 — Advanced Analysis | T-029, T-030, T-031, T-032 |
+| 10 — UI Components | T-033, T-034, T-035, T-036, T-037, T-038, T-039 |
+| 11 — CLI | T-040, T-041, T-042 |
 
 ### By Independence (can start immediately — no blockers)
 
@@ -1961,7 +3010,17 @@ Generate a human-readable `summary` string highlighting the most significant dif
 | **T-004** | BigInt time utilities |
 | **T-005** | Deterministic PRNG (SFC32) |
 
-### Dependency Chain (critical path)
+### Can Start After T-001 Only
+
+| Ticket | Description |
+|--------|-------------|
+| **T-033** | Node & Edge Inspector Panel |
+| **T-039** | Node Palette (draggable component library) |
+| **T-010** | Routing table |
+| **T-030** | Anti-pattern detector |
+| **T-031** | Cost calculator |
+
+### Dependency Chain (critical path to MVP)
 
 ```
 T-001 + T-002 + T-004 + T-005   (parallel — no deps)
@@ -1990,17 +3049,53 @@ T-001 + T-002 + T-004 + T-005   (parallel — no deps)
              T-023               T-025
                                    │
                                    ▼
-                                 T-026
-                                   │
-                                   ▼
-                                 T-027
+                                 T-026 ──────────────────────┐
+                                   │                          │
+                              ┌────┼──────┐                   ▼
+                              ▼    ▼      ▼              T-034 (Scenario Bar)
+                           T-027 T-035  T-028                 │
+                                   │                          │
+                              ┌────┼──────┐              (depends on T-028
+                              ▼    ▼      ▼               for serialization)
+                           T-036 T-037  T-038
+```
+
+**UI components (can develop in parallel with engine)**:
+
+```
+T-001 ──► T-033 (Inspector Panel)     — only needs types
+T-001 ──► T-039 (Node Palette)        — only needs types
+T-001 ──► T-030 → T-038 (Anti-patterns panel)
+T-001 ──► T-031 → T-038 (Cost panel)
+```
+
+### CLI chain
+
+```
+T-011 + T-020 + T-003 ──► T-040 (base CLI)
+                              │
+                         ┌────┼──────┐
+                         ▼    ▼      ▼
+                      T-041 T-042  (compare, cost, lint)
 ```
 
 ### By Size
 
 | Size | Tickets |
 |------|---------|
-| **S** (1-2 hrs) | T-002, T-004, T-005, T-007, T-010, T-018, T-019, T-020, T-021, T-024, T-027, T-030, T-031, T-032 |
-| **M** (3-5 hrs) | T-001, T-003, T-006, T-009, T-012, T-015, T-016, T-017, T-022, T-023, T-025, T-026, T-028, T-029 |
-| **L** (1 day) | T-008, T-013, T-014 |
+| **S** (1-2 hrs) | T-002, T-004, T-005, T-007, T-010, T-018, T-019, T-020, T-021, T-024, T-027, T-030, T-031, T-032, T-038, T-039, T-042 |
+| **M** (3-5 hrs) | T-001, T-003, T-006, T-009, T-012, T-015, T-016, T-017, T-022, T-023, T-025, T-026, T-028, T-029, T-035, T-036, T-037, T-041 |
+| **L** (1 day) | T-008, T-013, T-014, T-033, T-034, T-040 |
 | **XL** (2+ days) | T-011 |
+
+### By Layer
+
+| Layer | Tickets | Description |
+|-------|---------|-------------|
+| **Engine** (pure logic, no UI) | T-004, T-005, T-006, T-007, T-008, T-009, T-010, T-011, T-012, T-013, T-014, T-015, T-016, T-029 | Simulation primitives and core loop |
+| **Data** (types, validation, output) | T-001, T-002, T-003, T-017, T-018, T-019, T-020, T-021 | Contracts, metrics collection, output aggregation |
+| **Analysis** (static + post-sim) | T-030, T-031, T-032 | Anti-patterns, cost, design comparison |
+| **Scenarios** (chaos engineering) | T-022, T-023, T-024 | Experiment runner, presets, composer |
+| **UI Hooks** (glue) | T-025, T-026, T-027, T-028 | Web Worker, React hooks, serializer |
+| **UI Components** (React) | T-033, T-034, T-035, T-036, T-037, T-038, T-039 | Inspector, Scenario Bar, Results Tray, Palette |
+| **CLI** (terminal) | T-040, T-041, T-042 | `dsds` command runner |
