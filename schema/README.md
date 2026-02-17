@@ -62,7 +62,7 @@ The file exports all major types and interfaces, plus two pre-built constants:
 - **`BUILT_IN_SCENARIOS`** — 5 ready-to-use test scenarios
 - **`AWS_PROFILE`** — Pre-configured AWS provider profile with latency, quotas, and cost data
 
-## Relationship to other folders
+s
 
 - **`canonical-catalogue/`** — The CSV reference files that this schema codifies into TypeScript types
 - **`docs/`** — The documentation series that explains the theory behind these data structures (min-heaps, queueing models, workload generation, etc.)
