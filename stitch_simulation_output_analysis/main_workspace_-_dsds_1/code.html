@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Main Workspace - DSDS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b63c1",
+                        "background-light": "#f6f7f8", // Not really used in this dark-first UI
+                        "background-dark": "#0f1115",
+                        "surface-dark": "#1a1d21",
+                        "border-dark": "#2a2e35",
+                        "success": "#2e7d32",
+                        "warning": "#f57f17",
+                        "danger": "#c62828",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem", "sm": "0.125rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .grid-pattern {
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        /* Custom scrollbar for dense panels */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1d21; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333; 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444; 
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-slate-300 h-screen w-screen overflow-hidden flex flex-col font-display selection:bg-primary/30">
+<!-- Top Bar: Scenario Control -->
+<header class="h-16 bg-surface-dark border-b border-border-dark flex items-center justify-between px-4 shrink-0 z-20 shadow-md">
+<!-- Logo / Title -->
+<div class="flex items-center gap-3 w-64">
+<div class="size-8 bg-gradient-to-br from-primary to-blue-900 rounded flex items-center justify-center text-white">
+<span class="material-symbols-outlined">hub</span>
+</div>
+<h1 class="text-white text-sm font-bold tracking-tight">DSDS <span class="text-slate-500 font-normal">| Workspace</span></h1>
+</div>
+<!-- Middle: Controls -->
+<div class="flex flex-1 items-center justify-center gap-6">
+<!-- Scenario Selector -->
+<div class="flex flex-col w-40">
+<label class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-0.5">Scenario</label>
+<div class="relative">
+<select class="w-full bg-background-dark border border-border-dark text-xs text-white rounded h-8 px-2 py-0 focus:border-primary focus:ring-0 appearance-none">
+<option>Average Load</option>
+<option>Best Case</option>
+<option>Worst Case (Spike)</option>
+<option>DDoS Simulation</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-slate-500 pointer-events-none text-sm">expand_more</span>
+</div>
+</div>
+<!-- Traffic Profile -->
+<div class="flex flex-col w-40">
+<label class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-0.5">Traffic Profile</label>
+<div class="relative">
+<select class="w-full bg-background-dark border border-border-dark text-xs text-white rounded h-8 px-2 py-0 focus:border-primary focus:ring-0 appearance-none">
+<option>Poisson Distribution</option>
+<option>Bursty</option>
+<option>Scheduled Cron</option>
+<option>Trace-driven (Log)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-slate-500 pointer-events-none text-sm">expand_more</span>
+</div>
+</div>
+<!-- RPS Slider -->
+<div class="flex flex-col w-48 group">
+<div class="flex justify-between items-end mb-1">
+<label class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">RPS Target</label>
+<span class="text-xs font-mono text-primary">5,000</span>
+</div>
+<div class="relative h-4 flex items-center">
+<div class="w-full h-1 bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/2"></div>
+</div>
+<div class="absolute left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full shadow cursor-pointer hover:scale-110 transition-transform"></div>
+</div>
+</div>
+<!-- Seed -->
+<div class="flex flex-col">
+<label class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-0.5">Seed</label>
+<div class="flex items-center gap-2 px-2 py-1 bg-background-dark border border-border-dark rounded h-8">
+<span class="material-symbols-outlined text-slate-600 text-sm">lock</span>
+<span class="font-mono text-xs text-slate-400">0x8F2A...</span>
+</div>
+</div>
+</div>
+<!-- Right: Actions -->
+<div class="flex items-center justify-end gap-3 w-64">
+<button class="flex items-center justify-center size-8 rounded hover:bg-white/5 text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="flex items-center justify-center size-8 rounded hover:bg-white/5 text-slate-400 hover:text-white transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-danger rounded-full border border-surface-dark"></span>
+</button>
+<button class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm font-medium px-4 h-9 rounded transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span>Run Sim</span>
+</button>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar: Topology Builder -->
+<aside class="w-64 bg-surface-dark border-r border-border-dark flex flex-col shrink-0 z-10">
+<div class="p-3 border-b border-border-dark">
+<h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Component Library</h2>
+</div>
+<div class="flex-1 overflow-y-auto p-3 space-y-6">
+<!-- Compute Section -->
+<div>
+<h3 class="text-[10px] font-semibold text-slate-500 uppercase mb-2 px-1">Compute</h3>
+<div class="space-y-2">
+<div class="group flex items-center gap-3 p-2 rounded border border-transparent hover:border-border-dark hover:bg-background-dark cursor-grab active:cursor-grabbing transition-all">
+<div class="size-8 rounded bg-purple-900/30 text-purple-400 flex items-center justify-center border border-purple-500/20">
+<span class="material-symbols-outlined text-lg">api</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-200">API Gateway</span>
+<span class="text-[10px] text-slate-500">Ingress Controller</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-slate-600 text-sm opacity-0 group-hover:opacity-100">drag_indicator</span>
+</div>
+<div class="group flex items-center gap-3 p-2 rounded border border-transparent hover:border-border-dark hover:bg-background-dark cursor-grab active:cursor-grabbing transition-all">
+<div class="size-8 rounded bg-blue-900/30 text-blue-400 flex items-center justify-center border border-blue-500/20">
+<span class="material-symbols-outlined text-lg">memory</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-200">Worker Pool</span>
+<span class="text-[10px] text-slate-500">Async processing</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-slate-600 text-sm opacity-0 group-hover:opacity-100">drag_indicator</span>
+</div>
+</div>
+</div>
+<!-- Data Section -->
+<div>
+<h3 class="text-[10px] font-semibold text-slate-500 uppercase mb-2 px-1">Data Store</h3>
+<div class="space-y-2">
+<div class="group flex items-center gap-3 p-2 rounded border border-transparent hover:border-border-dark hover:bg-background-dark cursor-grab active:cursor-grabbing transition-all">
+<div class="size-8 rounded bg-emerald-900/30 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+<span class="material-symbols-outlined text-lg">database</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-200">Primary DB</span>
+<span class="text-[10px] text-slate-500">Relational SQL</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-slate-600 text-sm opacity-0 group-hover:opacity-100">drag_indicator</span>
+</div>
+<div class="group flex items-center gap-3 p-2 rounded border border-transparent hover:border-border-dark hover:bg-background-dark cursor-grab active:cursor-grabbing transition-all">
+<div class="size-8 rounded bg-orange-900/30 text-orange-400 flex items-center justify-center border border-orange-500/20">
+<span class="material-symbols-outlined text-lg">layers</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-200">Redis Cache</span>
+<span class="text-[10px] text-slate-500">In-memory key/val</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-slate-600 text-sm opacity-0 group-hover:opacity-100">drag_indicator</span>
+</div>
+</div>
+</div>
+<!-- Network Section -->
+<div>
+<h3 class="text-[10px] font-semibold text-slate-500 uppercase mb-2 px-1">Network</h3>
+<div class="space-y-2">
+<div class="group flex items-center gap-3 p-2 rounded border border-transparent hover:border-border-dark hover:bg-background-dark cursor-grab active:cursor-grabbing transition-all">
+<div class="size-8 rounded bg-slate-800 text-slate-400 flex items-center justify-center border border-slate-700">
+<span class="material-symbols-outlined text-lg">alt_route</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-200">Load Balancer</span>
+<span class="text-[10px] text-slate-500">L7 Routing</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-slate-600 text-sm opacity-0 group-hover:opacity-100">drag_indicator</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Mini Map -->
+<div class="h-40 bg-background-dark border-t border-border-dark p-2 relative">
+<div class="w-full h-full bg-surface-dark rounded border border-border-dark overflow-hidden relative" data-alt="Abstract representation of a mini-map view showing node layout" style="background-image: url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect x=\'20\' y=\'20\' width=\'10\' height=\'10\' fill=\'%23333\' /%3E%3Crect x=\'50\' y=\'50\' width=\'10\' height=\'10\' fill=\'%23333\' /%3E%3C/svg%3E'); background-size: cover;">
+<div class="absolute top-2 left-4 w-12 h-8 border border-primary/50 bg-primary/10"></div>
+</div>
+<div class="absolute bottom-4 right-4 flex gap-1">
+<button class="bg-surface-dark hover:bg-slate-700 p-1 rounded text-slate-400 border border-border-dark">
+<span class="material-symbols-outlined text-xs">remove</span>
+</button>
+<button class="bg-surface-dark hover:bg-slate-700 p-1 rounded text-slate-400 border border-border-dark">
+<span class="material-symbols-outlined text-xs">add</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Center: Canvas -->
+<section class="flex-1 bg-background-dark relative overflow-hidden grid-pattern">
+<!-- Canvas Toolbar -->
+<div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
+<div class="bg-surface-dark border border-border-dark rounded-md shadow-lg flex flex-col p-1">
+<button class="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded" title="Select">
+<span class="material-symbols-outlined text-lg">near_me</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded" title="Pan">
+<span class="material-symbols-outlined text-lg">pan_tool</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded" title="Connect">
+<span class="material-symbols-outlined text-lg">polyline</span>
+</button>
+</div>
+</div>
+<!-- Node 1: API Gateway -->
+<div class="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-64 bg-surface-dark border border-border-dark rounded-md shadow-2xl group hover:border-primary cursor-pointer">
+<div class="flex items-center justify-between p-3 border-b border-border-dark bg-slate-800/30">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-purple-400">api</span>
+<span class="text-sm font-semibold text-white">API Gateway</span>
+</div>
+<div class="size-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+</div>
+<div class="p-3 grid grid-cols-2 gap-2">
+<div class="bg-background-dark p-2 rounded border border-border-dark flex flex-col">
+<span class="text-[10px] text-slate-500 uppercase">CPU Saturation</span>
+<div class="flex items-end gap-1">
+<span class="text-sm font-mono text-green-400">42%</span>
+</div>
+</div>
+<div class="bg-background-dark p-2 rounded border border-border-dark flex flex-col">
+<span class="text-[10px] text-slate-500 uppercase">Queue Depth</span>
+<div class="flex items-end gap-1">
+<span class="text-sm font-mono text-yellow-500">12ms</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Connection Line (SVG) -->
+<svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
+<!-- Path from API to Service -->
+<path d="M 400 240 C 500 240, 500 450, 600 450" fill="none" stroke="#334155" stroke-dasharray="4 4" stroke-width="2"></path>
+<circle cx="500" cy="345" fill="#137fec" r="4"></circle>
+<!-- Edge Badge -->
+<g transform="translate(470, 310)">
+<rect fill="#1a1d21" height="20" rx="4" stroke="#334155" width="60"></rect>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="30" y="14">24ms</text>
+</g>
+</svg>
+<!-- Node 2: Payment Service (Selected) -->
+<div class="absolute top-[60%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-64 bg-surface-dark border-2 border-primary rounded-md shadow-2xl cursor-pointer">
+<div class="flex items-center justify-between p-3 border-b border-border-dark bg-primary/10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-400">settings_applications</span>
+<span class="text-sm font-semibold text-white">Payment Svc</span>
+</div>
+<div class="flex gap-1">
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded border border-primary/30">v1.2</span>
+<div class="size-2 rounded-full bg-green-500 self-center ml-1"></div>
+</div>
+</div>
+<div class="p-3 grid grid-cols-2 gap-2">
+<div class="bg-background-dark p-2 rounded border border-border-dark flex flex-col">
+<span class="text-[10px] text-slate-500 uppercase">Throughput</span>
+<div class="flex items-end gap-1">
+<span class="text-sm font-mono text-white">1.2k</span>
+<span class="text-[10px] text-slate-500 mb-0.5">req/s</span>
+</div>
+</div>
+<div class="bg-background-dark p-2 rounded border border-border-dark flex flex-col">
+<span class="text-[10px] text-slate-500 uppercase">Error Rate</span>
+<div class="flex items-end gap-1">
+<span class="text-sm font-mono text-green-400">0.01%</span>
+</div>
+</div>
+<div class="col-span-2 mt-1">
+<div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-blue-500 w-3/4"></div>
+</div>
+<div class="flex justify-between mt-1">
+<span class="text-[10px] text-slate-500">Processing Load</span>
+<span class="text-[10px] text-slate-400">75%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Legend/Toast -->
+<div class="absolute bottom-6 left-6 bg-surface-dark/90 backdrop-blur border border-border-dark px-4 py-2 rounded shadow-lg">
+<div class="flex items-center gap-4 text-xs">
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-green-500"></span><span class="text-slate-300">Healthy</span></div>
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-yellow-500"></span><span class="text-slate-300">Degraded</span></div>
+<div class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-red-500"></span><span class="text-slate-300">Critical</span></div>
+</div>
+</div>
+</section>
+<!-- Right Sidebar: Inspector -->
+<aside class="w-80 bg-surface-dark border-l border-border-dark flex flex-col shrink-0 z-10 overflow-hidden">
+<!-- Header -->
+<div class="h-14 flex items-center justify-between px-4 border-b border-border-dark bg-surface-dark">
+<h2 class="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-400">settings_applications</span>
+                    Payment Svc
+                </h2>
+<span class="text-[10px] font-mono text-slate-500 bg-background-dark px-1.5 py-0.5 rounded border border-border-dark">ID: node-4f2a</span>
+</div>
+<!-- Tabs -->
+<div class="flex border-b border-border-dark">
+<button class="flex-1 py-2.5 text-xs font-medium text-white border-b-2 border-primary bg-primary/5">Specs</button>
+<button class="flex-1 py-2.5 text-xs font-medium text-slate-500 hover:text-slate-300">State</button>
+<button class="flex-1 py-2.5 text-xs font-medium text-slate-500 hover:text-slate-300">Logs</button>
+</div>
+<!-- Content -->
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Node Configuration -->
+<section>
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide">Instance Config</h3>
+<span class="material-symbols-outlined text-slate-600 text-sm cursor-pointer">edit</span>
+</div>
+<div class="space-y-3">
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-[10px] text-slate-500 mb-1">vCPU Cores</label>
+<input class="w-full bg-background-dark border border-border-dark rounded text-xs text-white px-2 py-1.5 focus:border-primary focus:ring-0" type="number" value="4"/>
+</div>
+<div>
+<label class="block text-[10px] text-slate-500 mb-1">RAM (GB)</label>
+<input class="w-full bg-background-dark border border-border-dark rounded text-xs text-white px-2 py-1.5 focus:border-primary focus:ring-0" type="number" value="16"/>
+</div>
+</div>
+<div>
+<label class="block text-[10px] text-slate-500 mb-1">Region</label>
+<select class="w-full bg-background-dark border border-border-dark rounded text-xs text-white px-2 py-1.5 focus:border-primary focus:ring-0">
+<option>us-east-1 (N. Virginia)</option>
+<option>eu-west-1 (Ireland)</option>
+</select>
+</div>
+</div>
+</section>
+<hr class="border-border-dark"/>
+<!-- Execution Model -->
+<section>
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Execution Model</h3>
+<div class="space-y-3">
+<div>
+<div class="flex justify-between items-center mb-1">
+<label class="block text-[10px] text-slate-500">Thread Pool Size</label>
+<span class="text-[10px] text-primary font-mono">100</span>
+</div>
+<input class="w-full h-1 bg-border-dark rounded-lg appearance-none cursor-pointer accent-primary" max="500" min="10" type="range" value="100"/>
+</div>
+<div class="flex items-center justify-between py-1">
+<label class="text-xs text-slate-300">Cold Start Simulation</label>
+<div class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 checked:border-primary" id="toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-4 rounded-full bg-slate-700 cursor-pointer" for="toggle"></label>
+</div>
+</div>
+</div>
+</section>
+<hr class="border-border-dark"/>
+<!-- Failure Injection -->
+<section>
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-danger text-sm">warning</span>
+                        Failure Injection
+                    </h3>
+<div class="p-3 bg-red-900/10 border border-red-900/30 rounded-md space-y-3">
+<div>
+<label class="block text-[10px] text-red-300 mb-1">Failure Mode</label>
+<select class="w-full bg-background-dark border border-red-900/30 rounded text-xs text-white px-2 py-1.5 focus:border-danger focus:ring-0">
+<option>Random Partition</option>
+<option>Latency Spike</option>
+<option>Packet Loss</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] text-red-300 mb-1">Probability (%)</label>
+<div class="flex items-center gap-2">
+<input class="w-20 bg-background-dark border border-red-900/30 rounded text-xs text-white px-2 py-1.5 focus:border-danger focus:ring-0 text-right" type="text" value="0.5"/>
+<span class="text-xs text-red-400">%</span>
+</div>
+</div>
+</div>
+</section>
+<div class="pt-4">
+<button class="w-full py-2 bg-surface-dark border border-border-dark text-slate-300 text-xs font-medium rounded hover:bg-slate-800 transition-colors">
+                        View Detailed Metrics
+                    </button>
+</div>
+</div>
+</aside>
+</main>
+<style>
+        /* Custom Toggle Switch CSS */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #137fec;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #137fec;
+        }
+        .toggle-checkbox {
+            right: 50%; /* Adjusted for smoother transition start position if needed */
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</body></html>

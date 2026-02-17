@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DSDS Design System: Molecules</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111418", 
+                        "surface-dark": "#1c2127",
+                        "surface-darker": "#0d1014",
+                        "border-dark": "#3b4754",
+                        "text-secondary": "#9dabb9",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "sm": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar for technical feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111418; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b4754; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5966; 
+        }
+        .technical-grid {
+            background-image: linear-gradient(#3b4754 1px, transparent 1px), linear-gradient(90deg, #3b4754 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-color: #1c2127;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white overflow-hidden h-screen flex">
+<!-- Sidebar -->
+<aside class="w-64 flex flex-col border-r border-border-dark bg-[#111418] shrink-0 h-full">
+<div class="p-6 pb-2">
+<h1 class="text-white text-base font-bold leading-normal tracking-wide">DSDS System</h1>
+<p class="text-text-secondary text-xs font-mono mt-1">v2.4.0 (Stable)</p>
+</div>
+<nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary transition-colors">home</span>
+<span class="text-sm font-medium">Introduction</span>
+</a>
+<div class="pt-4 pb-2 px-3 text-xs font-bold text-text-secondary uppercase tracking-wider">Atoms</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+<span class="text-sm font-medium">Colors &amp; Type</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">check_box_outline_blank</span>
+<span class="text-sm font-medium">Base Inputs</span>
+</a>
+<div class="pt-4 pb-2 px-3 text-xs font-bold text-text-secondary uppercase tracking-wider">Molecules</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-surface-dark text-white border-l-2 border-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-primary">science</span>
+<span class="text-sm font-medium">Components</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">space_dashboard</span>
+<span class="text-sm font-medium">Patterns</span>
+</a>
+<div class="pt-4 pb-2 px-3 text-xs font-bold text-text-secondary uppercase tracking-wider">System</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+<span class="text-sm font-medium">Graph Nodes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-dark hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm font-medium">Utilities</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto bg-background-dark relative">
+<!-- Header -->
+<header class="sticky top-0 z-20 bg-background-dark/95 backdrop-blur border-b border-border-dark px-10 py-8">
+<div class="max-w-6xl mx-auto">
+<div class="flex flex-col gap-2">
+<h2 class="text-white text-4xl font-black tracking-tight">Molecules</h2>
+<p class="text-text-secondary text-lg max-w-3xl font-light">
+                        Functional UI units composing atoms. Engineering-ready components for the Deterministic System Design Simulator with defined states and data contracts.
+                    </p>
+</div>
+</div>
+</header>
+<div class="px-10 py-10 pb-32 max-w-6xl mx-auto space-y-16">
+<!-- Section: Form Controls -->
+<section>
+<div class="flex items-center justify-between border-b border-border-dark pb-4 mb-8">
+<h3 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">keyboard</span>
+                        Form &amp; Input Controls
+                    </h3>
+<span class="text-xs font-mono text-text-secondary bg-surface-dark px-2 py-1 rounded border border-border-dark">src/molecules/forms</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Text Field Standard -->
+<div class="bg-surface-dark border border-border-dark rounded-lg p-5">
+<div class="mb-4 flex justify-between items-center">
+<span class="text-xs font-mono text-text-secondary">TextField (Default)</span>
+</div>
+<label class="flex flex-col w-full group">
+<span class="text-white text-sm font-medium pb-2 group-focus-within:text-primary transition-colors">Cluster Name</span>
+<input class="w-full bg-[#0f1216] text-white border border-border-dark rounded h-10 px-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-gray-600" placeholder="e.g. us-east-prod-01" value="us-west-sim-04"/>
+<span class="text-text-secondary text-xs mt-1.5">Unique identifier for the topological cluster.</span>
+</label>
+</div>
+<!-- Read Only Seed -->
+<div class="bg-surface-dark border border-border-dark rounded-lg p-5">
+<div class="mb-4 flex justify-between items-center">
+<span class="text-xs font-mono text-text-secondary">SeedIndicator (Read-Only)</span>
+</div>
+<label class="flex flex-col w-full">
+<span class="text-white text-sm font-medium pb-2">Simulation Seed</span>
+<div class="flex w-full items-center rounded border border-border-dark bg-[#0f1216]">
+<input class="flex-1 bg-transparent text-gray-400 h-10 px-3 text-sm font-mono border-none focus:ring-0 cursor-not-allowed" readonly="" value="0x7F2A9C1D"/>
+<div class="px-3 text-text-secondary border-l border-border-dark h-10 flex items-center justify-center bg-[#161b22]">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+</div>
+<span class="text-text-secondary text-xs mt-1.5 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Deterministic lock active
+                            </span>
+</label>
+</div>
+<!-- Scenario Selector -->
+<div class="bg-surface-dark border border-border-dark rounded-lg p-5">
+<div class="mb-4 flex justify-between items-center">
+<span class="text-xs font-mono text-text-secondary">ScenarioSelector</span>
+</div>
+<label class="flex flex-col w-full">
+<span class="text-white text-sm font-medium pb-2">Target Scenario</span>
+<div class="relative">
+<select class="appearance-none w-full bg-[#0f1216] text-white border border-border-dark rounded h-10 pl-3 pr-10 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer">
+<option>Load_Spike_A (ID: 992)</option>
+<option>Latency_Drift_B (ID: 881)</option>
+<option>Network_Partition_C (ID: 102)</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+<span class="text-text-secondary text-xs mt-1.5">Selects the initial boundary conditions.</span>
+</label>
+</div>
+<!-- Validation State -->
+<div class="bg-surface-dark border border-border-dark rounded-lg p-5 border-l-2 border-l-red-500">
+<div class="mb-4 flex justify-between items-center">
+<span class="text-xs font-mono text-red-400">TextField (Error State)</span>
+</div>
+<label class="flex flex-col w-full">
+<span class="text-white text-sm font-medium pb-2">Replica Count</span>
+<div class="relative">
+<input class="w-full bg-[#0f1216] text-white border border-red-500/50 rounded h-10 px-3 text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all" value="-1"/>
+<span class="material-symbols-outlined text-red-500 absolute right-3 top-2.5 text-[20px]">error</span>
+</div>
+<span class="text-red-400 text-xs mt-1.5 font-medium">Value must be a positive integer.</span>
+</label>
+</div>
+</div>
+</section>
+<!-- Section: Graph & Topology Elements -->
+<section>
+<div class="flex items-center justify-between border-b border-border-dark pb-4 mb-8">
+<h3 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">hub</span>
+                        Graph &amp; Topology Elements
+                    </h3>
+<span class="text-xs font-mono text-text-secondary bg-surface-dark px-2 py-1 rounded border border-border-dark">src/molecules/graph</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Node Badges -->
+<div class="bg-surface-dark border border-border-dark rounded-lg p-6">
+<h4 class="text-sm font-bold text-white mb-6 uppercase tracking-wider border-b border-border-dark pb-2">Node Badges</h4>
+<div class="flex flex-wrap gap-4 items-center mb-6">
+<!-- CPU Badge -->
+<div class="flex items-center gap-2 px-2 py-1 rounded border border-border-dark bg-[#111418]">
+<span class="material-symbols-outlined text-text-secondary text-[16px]">memory</span>
+<span class="text-xs font-mono text-text-secondary border-r border-border-dark pr-2 mr-2">CPU</span>
+<span class="text-xs font-bold text-green-400">12%</span>
+</div>
+<!-- CPU Badge Warning -->
+<div class="flex items-center gap-2 px-2 py-1 rounded border border-yellow-500/30 bg-[#1a1811]">
+<span class="material-symbols-outlined text-yellow-500 text-[16px]">memory</span>
+<span class="text-xs font-mono text-yellow-200/70 border-r border-yellow-500/30 pr-2 mr-2">CPU</span>
+<span class="text-xs font-bold text-yellow-500">89%</span>
+</div>
+<!-- Error Badge -->
+<div class="flex items-center gap-2 px-2 py-1 rounded border border-red-500/30 bg-[#1a1111]">
+<span class="material-symbols-outlined text-red-500 text-[16px]">warning</span>
+<span class="text-xs font-mono text-red-200/70 border-r border-red-500/30 pr-2 mr-2">ERR</span>
+<span class="text-xs font-bold text-red-500">SIGKILL</span>
+</div>
+</div>
+<p class="text-xs text-text-secondary">Used as overlays on topology nodes to show real-time resource constraints.</p>
+</div>
+<!-- Edge Badges -->
+<div class="bg-surface-dark border border-border-dark rounded-lg p-6 relative overflow-hidden">
+<div class="absolute inset-0 technical-grid pointer-events-none"></div>
+<h4 class="text-sm font-bold text-white mb-6 uppercase tracking-wider border-b border-border-dark pb-2 relative z-10">Edge Metrics</h4>
+<div class="relative z-10 flex flex-col gap-6 py-4">
+<!-- Latency Pill -->
+<div class="flex items-center gap-4">
+<div class="h-px bg-border-dark flex-1 relative">
+<div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-surface-dark border border-border-dark rounded-full px-3 py-1 flex items-center gap-2 shadow-lg">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+<span class="text-xs font-mono text-white">12ms</span>
+</div>
+</div>
+</div>
+<!-- Throughput Pill -->
+<div class="flex items-center gap-4">
+<div class="h-px bg-border-dark flex-1 relative">
+<div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-surface-dark border border-border-dark rounded-full px-3 py-1 flex items-center gap-2 shadow-lg">
+<span class="material-symbols-outlined text-text-secondary text-[14px]">sync_alt</span>
+<span class="text-xs font-mono text-white">4.2 GB/s</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Data Display -->
+<section>
+<div class="flex items-center justify-between border-b border-border-dark pb-4 mb-8">
+<h3 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">monitoring</span>
+                        Data Display
+                    </h3>
+<span class="text-xs font-mono text-text-secondary bg-surface-dark px-2 py-1 rounded border border-border-dark">src/molecules/display</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Metric Card 1 -->
+<div class="bg-surface-dark border border-border-dark rounded p-4 flex flex-col justify-between hover:border-primary/50 transition-colors cursor-default group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs text-text-secondary uppercase tracking-wide font-medium">Total Requests</span>
+<span class="material-symbols-outlined text-text-secondary text-[18px]">show_chart</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-2xl font-mono font-bold text-white">2.4M</span>
+<span class="text-xs font-medium text-green-500 mb-1 flex items-center">
+<span class="material-symbols-outlined text-[12px]">arrow_upward</span> 12%
+                            </span>
+</div>
+</div>
+<!-- Metric Card 2 -->
+<div class="bg-surface-dark border border-border-dark rounded p-4 flex flex-col justify-between hover:border-primary/50 transition-colors cursor-default group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs text-text-secondary uppercase tracking-wide font-medium">Avg Latency</span>
+<span class="material-symbols-outlined text-text-secondary text-[18px]">timer</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="text-2xl font-mono font-bold text-white">45ms</span>
+<span class="text-xs font-medium text-red-500 mb-1 flex items-center">
+<span class="material-symbols-outlined text-[12px]">arrow_upward</span> 4%
+                            </span>
+</div>
+</div>
+<!-- Status List -->
+<div class="bg-surface-dark border border-border-dark rounded p-4 col-span-2">
+<div class="flex justify-between items-center mb-4 border-b border-border-dark pb-2">
+<span class="text-xs text-text-secondary uppercase tracking-wide font-medium">System Health</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+<span class="text-sm text-white">Control Plane</span>
+</div>
+<span class="text-xs font-mono text-green-500 bg-green-500/10 px-2 py-0.5 rounded">ONLINE</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+<span class="text-sm text-white">Data Node-04</span>
+</div>
+<span class="text-xs font-mono text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">DEGRADED</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-border-dark"></div>
+<span class="text-sm text-text-secondary">Backup Service</span>
+</div>
+<span class="text-xs font-mono text-text-secondary bg-surface-darker px-2 py-0.5 rounded border border-border-dark">OFFLINE</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Utilities -->
+<section>
+<div class="flex items-center justify-between border-b border-border-dark pb-4 mb-8">
+<h3 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">handyman</span>
+                        Utilities &amp; Interaction
+                    </h3>
+<span class="text-xs font-mono text-text-secondary bg-surface-dark px-2 py-1 rounded border border-border-dark">src/molecules/utils</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Toolbars & Toggles -->
+<div class="space-y-8">
+<div>
+<h4 class="text-xs font-mono text-text-secondary mb-3">ToolbarGroup</h4>
+<div class="inline-flex rounded bg-[#111418] border border-border-dark p-1">
+<button class="p-2 text-text-secondary hover:text-white hover:bg-surface-dark rounded transition-colors" title="Select">
+<span class="material-symbols-outlined text-[20px]">near_me</span>
+</button>
+<button class="p-2 text-text-secondary hover:text-white hover:bg-surface-dark rounded transition-colors" title="Pan">
+<span class="material-symbols-outlined text-[20px]">pan_tool</span>
+</button>
+<div class="w-px bg-border-dark mx-1 my-1"></div>
+<button class="p-2 text-text-secondary hover:text-white hover:bg-surface-dark rounded transition-colors" title="Zoom In">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+<button class="p-2 text-text-secondary hover:text-white hover:bg-surface-dark rounded transition-colors" title="Zoom Out">
+<span class="material-symbols-outlined text-[20px]">remove</span>
+</button>
+</div>
+</div>
+<div>
+<h4 class="text-xs font-mono text-text-secondary mb-3">ToggleGroup</h4>
+<div class="inline-flex rounded bg-[#111418] border border-border-dark p-0.5">
+<button class="px-4 py-1.5 text-xs font-medium text-white bg-surface-dark rounded shadow-sm border border-border-dark/50 transition-colors">Design</button>
+<button class="px-4 py-1.5 text-xs font-medium text-text-secondary hover:text-white transition-colors">Simulate</button>
+<button class="px-4 py-1.5 text-xs font-medium text-text-secondary hover:text-white transition-colors">Analyze</button>
+</div>
+</div>
+</div>
+<!-- Math Tooltip -->
+<div class="bg-surface-dark border border-border-dark rounded-lg p-6">
+<h4 class="text-xs font-mono text-text-secondary mb-4">MathTooltip</h4>
+<div class="relative inline-block group">
+<span class="text-white text-sm border-b border-dashed border-text-secondary cursor-help">P-99 Distribution</span>
+<!-- Tooltip Body -->
+<div class="absolute left-0 bottom-full mb-2 w-64 p-3 bg-[#0d1014] border border-border-dark rounded shadow-2xl z-10">
+<div class="flex items-center gap-2 mb-2 border-b border-border-dark pb-2">
+<span class="material-symbols-outlined text-primary text-[16px]">functions</span>
+<span class="text-xs font-bold text-white">Calculation Formula</span>
+</div>
+<p class="text-xs text-text-secondary mb-2">Calculates the 99th percentile latency of the cluster.</p>
+<div class="bg-[#1c2127] p-2 rounded text-center">
+<span class="font-serif italic text-white text-sm">P<sub>99</sub> = μ + 2.33σ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Legend Items -->
+<div class="col-span-1 md:col-span-2 bg-surface-dark border border-border-dark rounded-lg p-6 flex flex-wrap gap-8">
+<div>
+<h4 class="text-xs font-mono text-text-secondary mb-3">ChartLegend</h4>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 cursor-pointer opacity-100 hover:opacity-80">
+<span class="w-3 h-3 rounded-sm bg-primary"></span>
+<span class="text-sm text-text-secondary">Requests</span>
+</div>
+<div class="flex items-center gap-2 cursor-pointer opacity-100 hover:opacity-80">
+<span class="w-3 h-3 rounded-sm bg-purple-500"></span>
+<span class="text-sm text-text-secondary">Errors</span>
+</div>
+<div class="flex items-center gap-2 cursor-pointer opacity-50 hover:opacity-100 transition-opacity decoration-slice line-through">
+<span class="w-3 h-3 rounded-sm bg-gray-600"></span>
+<span class="text-sm text-text-secondary">Latency</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<footer class="pt-10 border-t border-border-dark text-center">
+<p class="text-text-secondary text-sm">DSDS Design System © 2023 Internal Engineering Group.</p>
+</footer>
+</div>
+</main>
+</body></html>

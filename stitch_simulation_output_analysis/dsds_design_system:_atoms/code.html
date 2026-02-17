@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DSDS Design System: Atoms</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-hover": "#3b82f6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1a2634",
+                        "border-dark": "#2d3b4e",
+                        "text-secondary": "#94a3b8",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for engineering feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101922; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d3b4e; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b4d63; 
+        }
+        
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+        }
+        input[type=range]:focus {
+            outline: none; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white overflow-hidden">
+<div class="flex h-screen w-full overflow-hidden">
+<!-- Sidebar -->
+<div class="w-64 flex-shrink-0 flex flex-col border-r border-border-dark bg-background-dark h-full">
+<div class="p-6 flex flex-col gap-1 border-b border-border-dark">
+<h1 class="text-white text-lg font-bold leading-tight tracking-tight">DSDS System</h1>
+<p class="text-text-secondary text-xs font-mono">v2.4.0 • Engineering</p>
+</div>
+<div class="flex flex-col gap-1 p-4 flex-1 overflow-y-auto">
+<div class="flex items-center gap-3 px-3 py-2 rounded bg-[#283039] border border-[#3e4a59] cursor-pointer">
+<span class="material-symbols-outlined text-primary text-[20px]">all_inclusive</span>
+<p class="text-white text-sm font-medium">Atoms</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-dark cursor-pointer text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">widgets</span>
+<p class="text-sm font-medium">Molecules</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-dark cursor-pointer text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<p class="text-sm font-medium">Organisms</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-dark cursor-pointer text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">web</span>
+<p class="text-sm font-medium">Templates</p>
+</div>
+<div class="mt-8 mb-2 px-3">
+<p class="text-xs font-bold text-text-secondary uppercase tracking-wider">Resources</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-dark cursor-pointer text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+<p class="text-sm font-medium">Tokens</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-surface-dark cursor-pointer text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">accessibility</span>
+<p class="text-sm font-medium">Accessibility</p>
+</div>
+</div>
+<div class="p-4 border-t border-border-dark">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold">JD</div>
+<div class="flex flex-col">
+<p class="text-xs font-medium text-white">John Doe</p>
+<p class="text-[10px] text-text-secondary">Lead Architect</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col h-full overflow-hidden bg-background-dark relative">
+<!-- Top Bar (Search/Breadcrumbs) -->
+<div class="h-16 border-b border-border-dark flex items-center justify-between px-8 bg-background-dark z-10">
+<div class="flex items-center gap-2 text-sm text-text-secondary">
+<span>Design System</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-white font-medium">Atoms</span>
+</div>
+<div class="flex gap-4 items-center">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-text-secondary text-[18px]">search</span>
+<input class="h-9 w-64 bg-surface-dark border border-border-dark rounded pl-9 pr-4 text-sm text-white placeholder-text-secondary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search components..." type="text"/>
+</div>
+<button class="h-9 w-9 flex items-center justify-center rounded border border-border-dark hover:bg-surface-dark text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">code</span>
+</button>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-8 pb-20 scroll-smooth">
+<div class="max-w-[1200px] mx-auto flex flex-col gap-12">
+<!-- Page Header -->
+<div class="flex flex-col gap-4 border-b border-border-dark pb-8">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded bg-primary/20 flex items-center justify-center text-primary border border-primary/30">
+<span class="material-symbols-outlined text-3xl">all_inclusive</span>
+</div>
+<div>
+<h1 class="text-4xl font-black text-white tracking-tight">Atoms</h1>
+<p class="text-text-secondary mt-1 max-w-2xl">Low-level primitives and foundational elements. These components serve as the building blocks for all DSDS interfaces, ensuring consistency across simulation tools.</p>
+</div>
+</div>
+</div>
+<!-- Section: Buttons -->
+<section class="flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">smart_button</span>
+                            Buttons
+                        </h2>
+<span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] border border-blue-500/20 font-mono">WCAG AA</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Variants -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary mb-2">Variants</h3>
+<div class="flex flex-wrap gap-4 items-start">
+<button class="h-10 px-4 bg-primary hover:bg-primary-hover text-white text-sm font-semibold rounded transition-colors shadow-lg shadow-blue-900/20">
+                                    Primary Action
+                                </button>
+<button class="h-10 px-4 bg-transparent border border-border-dark hover:border-text-secondary hover:bg-white/5 text-white text-sm font-semibold rounded transition-all">
+                                    Secondary Action
+                                </button>
+<button class="h-10 px-4 bg-transparent hover:bg-white/5 text-primary text-sm font-semibold rounded transition-colors">
+                                    Tertiary Action
+                                </button>
+<button class="h-10 px-4 bg-red-600/10 border border-red-500/30 hover:bg-red-600/20 text-red-500 text-sm font-semibold rounded transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+                                    Danger Zone
+                                </button>
+</div>
+</div>
+<!-- States & Sizes -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col gap-6">
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">States</h3>
+<div class="flex flex-wrap gap-4">
+<button class="h-9 px-3 bg-primary text-white text-sm font-semibold rounded opacity-50 cursor-not-allowed">
+                                        Disabled
+                                    </button>
+<button class="h-9 w-9 flex items-center justify-center bg-surface-dark border border-border-dark text-white rounded hover:border-primary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+</button>
+<button class="h-9 px-4 bg-primary text-white text-sm font-semibold rounded flex items-center gap-2 cursor-wait">
+<span class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
+                                        Processing
+                                    </button>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary mb-3">Density / Sizes</h3>
+<div class="flex items-end gap-3">
+<button class="h-7 px-2 text-xs bg-surface-dark border border-border-dark text-white rounded font-medium">Small (28px)</button>
+<button class="h-9 px-3 text-sm bg-surface-dark border border-border-dark text-white rounded font-medium">Medium (36px)</button>
+<button class="h-11 px-5 text-base bg-surface-dark border border-border-dark text-white rounded font-medium">Large (44px)</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Inputs -->
+<section class="flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">input</span>
+                            Inputs &amp; Forms
+                        </h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Text Inputs -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary">Text Fields</h3>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-medium text-text-secondary">Node Name</label>
+<input class="h-10 w-full bg-background-dark border border-border-dark rounded px-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="e.g. Server-01" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-medium text-text-secondary flex justify-between">
+<span>API Key</span>
+<span class="text-[10px] text-red-400">Required</span>
+</label>
+<div class="relative">
+<input class="h-10 w-full bg-background-dark border border-red-500/50 rounded px-3 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all pr-10" type="password" value="sk_live_123456"/>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-text-secondary text-[20px] cursor-pointer hover:text-white">visibility</span>
+</div>
+<span class="text-[10px] text-red-400">Invalid key format</span>
+</div>
+</div>
+<!-- Numeric & Dropdown -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary">Numeric &amp; Selection</h3>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-medium text-text-secondary">Replication Factor</label>
+<div class="flex h-10 bg-background-dark border border-border-dark rounded overflow-hidden">
+<button class="w-10 hover:bg-white/5 border-r border-border-dark text-text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<input class="flex-1 bg-transparent text-center text-white text-sm focus:outline-none appearance-none font-mono" type="number" value="3"/>
+<button class="w-10 hover:bg-white/5 border-l border-border-dark text-text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-medium text-text-secondary">Cluster Region</label>
+<div class="relative">
+<select class="h-10 w-full bg-background-dark border border-border-dark rounded px-3 text-sm text-white appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
+<option>us-east-1 (N. Virginia)</option>
+<option>us-west-2 (Oregon)</option>
+<option>eu-central-1 (Frankfurt)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-text-secondary pointer-events-none text-[20px]">arrow_drop_down</span>
+</div>
+</div>
+</div>
+<!-- Toggles & Sliders -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col gap-6">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary">Toggles &amp; Controls</h3>
+<div class="flex flex-col gap-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-border-dark peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</div>
+<span class="text-sm font-medium text-white group-hover:text-primary transition-colors">Auto-scaling</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-4 h-4 text-primary bg-background-dark border-gray-600 rounded focus:ring-primary focus:ring-2" type="checkbox"/>
+<span class="text-sm text-text-secondary group-hover:text-white">Enable Logging</span>
+</label>
+<div class="flex gap-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="w-4 h-4 text-primary bg-background-dark border-gray-600 focus:ring-primary focus:ring-2" name="protocol" type="radio"/>
+<span class="text-sm text-white">TCP</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-4 h-4 text-primary bg-background-dark border-gray-600 focus:ring-primary focus:ring-2" name="protocol" type="radio"/>
+<span class="text-sm text-text-secondary">UDP</span>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-2 pt-2">
+<div class="flex justify-between text-xs text-text-secondary">
+<span>CPU Limit</span>
+<span class="font-mono text-white">4 Cores</span>
+</div>
+<input class="w-full h-1 bg-border-dark rounded-lg appearance-none cursor-pointer [&amp;::-webkit-slider-thumb]:bg-primary [&amp;::-webkit-slider-thumb]:h-4 [&amp;::-webkit-slider-thumb]:w-4 [&amp;::-webkit-slider-thumb]:rounded-full [&amp;::-webkit-slider-thumb]:appearance-none" max="16" min="1" type="range" value="4"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Feedback & Metric -->
+<section class="flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">monitoring</span>
+                            Feedback &amp; Metrics
+                        </h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Badges -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary">Status Badges</h3>
+<div class="flex flex-col gap-2 items-start">
+<span class="inline-flex items-center px-2 py-1 rounded bg-green-500/10 text-green-400 text-xs font-medium border border-green-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400 mr-1.5"></span>
+                                    Active
+                                </span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-amber-500/10 text-amber-400 text-xs font-medium border border-amber-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-400 mr-1.5"></span>
+                                    Degraded
+                                </span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-red-500/10 text-red-400 text-xs font-medium border border-red-500/20">
+<span class="w-1.5 h-1.5 rounded-full bg-red-400 mr-1.5"></span>
+                                    Critical
+                                </span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-700/50 text-slate-400 text-xs font-medium border border-slate-600/30">
+                                    Stopped
+                                </span>
+</div>
+</div>
+<!-- Metric Atom -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col justify-between">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary mb-2">Metric Value</h3>
+<div class="flex flex-col">
+<span class="text-sm text-text-secondary font-medium">Throughput (RPS)</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-3xl font-mono font-bold text-white tracking-tight">24,592</span>
+</div>
+<div class="flex items-center gap-1 mt-2 text-green-400 text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>+12.5%</span>
+<span class="text-text-secondary font-normal ml-1">vs last hour</span>
+</div>
+</div>
+</div>
+<!-- Progress -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col gap-6">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary">Progress</h3>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between text-xs">
+<span class="text-white">Provisioning</span>
+<span class="text-primary font-mono">75%</span>
+</div>
+<div class="w-full bg-background-dark rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-8 h-8">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<circle class="text-border-dark stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-width="10"></circle>
+<circle class="text-primary progress-ring__circle stroke-current" cx="50" cy="50" fill="transparent" r="40" stroke-dasharray="251.2" stroke-dashoffset="60" stroke-linecap="round" stroke-width="10"></circle>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-medium text-white">Uploading...</span>
+<span class="text-[10px] text-text-secondary">45s remaining</span>
+</div>
+</div>
+</div>
+<!-- Tooltip & Popover -->
+<div class="bg-surface-dark border border-border-dark rounded p-6 flex flex-col gap-4 items-center justify-center relative">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-secondary absolute top-6 left-6">Tooltip</h3>
+<div class="group relative flex justify-center">
+<button class="text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined">info</span>
+</button>
+<div class="absolute bottom-full mb-2 hidden group-hover:block w-32 p-2 bg-gray-900 text-white text-[10px] rounded border border-gray-700 shadow-xl text-center z-20">
+                                     Displays additional info on hover.
+                                     <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Code Block -->
+<section class="flex flex-col gap-6 mb-20">
+<h2 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">terminal</span>
+                        Technical
+                    </h2>
+<div class="w-full bg-[#0d1117] border border-border-dark rounded-lg overflow-hidden font-mono text-sm">
+<div class="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-border-dark">
+<span class="text-xs text-text-secondary">config.json</span>
+<div class="flex gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500/20 border border-amber-500/50"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50"></span>
+</div>
+</div>
+<div class="p-4 text-gray-300 overflow-x-auto">
+<pre><code><span class="text-purple-400">import</span> { Button, Input } <span class="text-purple-400">from</span> <span class="text-green-400">'@dsds/atoms'</span>;
+
+<span class="text-blue-400">const</span> <span class="text-yellow-200">SimulationConfig</span> = () =&gt; (
+  <span class="text-gray-500">&lt;</span><span class="text-red-400">div</span> <span class="text-orange-400">className</span>=<span class="text-green-400">"p-4"</span><span class="text-gray-500">&gt;</span>
+    <span class="text-gray-500">&lt;</span><span class="text-yellow-400">Button</span> <span class="text-orange-400">variant</span>=<span class="text-green-400">"primary"</span> <span class="text-orange-400">size</span>=<span class="text-green-400">"md"</span><span class="text-gray-500">&gt;</span>
+      Start Simulation
+    <span class="text-gray-500">&lt;/</span><span class="text-yellow-400">Button</span><span class="text-gray-500">&gt;</span>
+  <span class="text-gray-500">&lt;/</span><span class="text-red-400">div</span><span class="text-gray-500">&gt;</span>
+);</code></pre>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</div>
+</body></html>

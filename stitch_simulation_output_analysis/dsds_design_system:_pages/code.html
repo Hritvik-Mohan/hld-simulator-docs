@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DSDS Design System - Pages</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111418",
+                        "surface-dark": "#1c232b",
+                        "border-dark": "#283039",
+                        "text-secondary": "#9dabb9"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem", // 2px for technical feel
+                        "md": "0.25rem",
+                        "lg": "0.375rem", 
+                        "xl": "0.5rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for technical feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111418; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #283039; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3e4a56; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white overflow-hidden h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-b-border-dark px-6 py-3 bg-[#111418] z-20">
+<div class="flex items-center gap-4 text-white">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]">hub</span>
+</div>
+<div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">DSDS</h2>
+<span class="text-xs text-text-secondary font-mono tracking-wide">DESIGN SYSTEM v2.4</span>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<div class="flex gap-2">
+<button class="flex items-center justify-center size-8 rounded hover:bg-[#283039] text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="flex items-center justify-center size-8 rounded hover:bg-[#283039] text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+<div class="h-6 w-px bg-[#283039]"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-medium text-white leading-none">Alex Chen</p>
+<p class="text-xs text-text-secondary leading-none mt-1">Lead Architect</p>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded size-9 border border-border-dark" data-alt="User profile avatar showing a professional headshot" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDa3NzsmC_KnmpgaggnzDrsP8N-cvitinYUmqnEh9dJzjYoPE0YOYzCW5woAOFuU4Kn1xG81xR6lbMpqmr1JdAcONH2wFtjD7fjkdhuXEQu0x4Jho4ghAICzcTTxfGKvAcx43-uzO7nwuv6a4lw8P2UrlGl3u5vr5DS64ZGN-X6wmzRO8D35VOaW-Ok3y_7pBCH1nXsNeeBa5C5_Zn3AlvvloxbfmWyOpoaV-r8Xv---xWMA7gUU2JDkaMG5-8v72q7zaOgjJupa7g");'></div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Side Navigation -->
+<nav class="w-64 flex-none flex flex-col justify-between bg-[#111418] border-r border-r-border-dark overflow-y-auto hidden md:flex">
+<div class="flex flex-col gap-6 p-4">
+<div class="flex flex-col gap-1">
+<div class="px-3 py-2"><p class="text-text-secondary text-xs font-bold uppercase tracking-wider">Foundation</p></div>
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1c232b] group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white text-[20px]">science</span>
+<p class="text-text-secondary group-hover:text-white text-sm font-medium leading-normal">Atoms</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1c232b] group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white text-[20px]">widgets</span>
+<p class="text-text-secondary group-hover:text-white text-sm font-medium leading-normal">Molecules</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1c232b] group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white text-[20px]">view_quilt</span>
+<p class="text-text-secondary group-hover:text-white text-sm font-medium leading-normal">Organisms</p>
+</a>
+</div>
+<div class="flex flex-col gap-1">
+<div class="px-3 py-2"><p class="text-text-secondary text-xs font-bold uppercase tracking-wider">Assembly</p></div>
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1c232b] group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white text-[20px]">layers</span>
+<p class="text-text-secondary group-hover:text-white text-sm font-medium leading-normal">Templates</p>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-primary/10 border-l-2 border-primary" href="#">
+<span class="material-symbols-outlined text-primary text-[20px]">web</span>
+<p class="text-white text-sm font-medium leading-normal">Pages</p>
+</a>
+</div>
+<div class="flex flex-col gap-1">
+<div class="px-3 py-2"><p class="text-text-secondary text-xs font-bold uppercase tracking-wider">Resources</p></div>
+<a class="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1c232b] group" href="#">
+<span class="material-symbols-outlined text-text-secondary group-hover:text-white text-[20px]">menu_book</span>
+<p class="text-text-secondary group-hover:text-white text-sm font-medium leading-normal">Guidelines</p>
+</a>
+</div>
+</div>
+<div class="p-4 border-t border-border-dark">
+<div class="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1c232b] cursor-pointer text-text-secondary hover:text-white">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<p class="text-sm font-medium leading-normal">Logout</p>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col overflow-y-auto bg-background-dark relative">
+<div class="flex-1 w-full max-w-[1400px] mx-auto p-6 md:p-10 flex flex-col gap-8">
+<!-- Breadcrumbs & Header Section -->
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-2 text-sm">
+<a class="text-text-secondary hover:text-primary font-medium" href="#">DSDS</a>
+<span class="text-text-secondary font-medium">/</span>
+<span class="text-white font-medium">Pages</span>
+</div>
+<div class="flex flex-wrap justify-between items-end gap-4 border-b border-border-dark pb-6">
+<div class="flex flex-col gap-2 max-w-2xl">
+<h1 class="text-white text-4xl font-black leading-tight tracking-[-0.02em]">Pages Gallery</h1>
+<p class="text-text-secondary text-base font-normal leading-relaxed">
+                                Definitive gallery of assembled, production-ready screen layouts for the DSDS application. 
+                                Each page represents a complete user flow built from verified Organisms and Templates.
+                            </p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 h-10 bg-surface-dark border border-border-dark hover:border-text-secondary text-white text-sm font-medium rounded transition-all">
+<span class="material-symbols-outlined text-[18px]">code</span>
+                                View Source
+                            </button>
+<button class="flex items-center gap-2 px-4 h-10 bg-primary hover:bg-blue-600 text-white text-sm font-bold rounded transition-all shadow-lg shadow-blue-900/20">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                                New Page Definition
+                            </button>
+</div>
+</div>
+</div>
+<!-- Controls & Filtering -->
+<div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-surface-dark/50 p-2 rounded-lg border border-border-dark/50 backdrop-blur-sm sticky top-0 z-10">
+<div class="relative w-full md:w-96">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-secondary text-[20px]">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border border-border-dark rounded leading-5 bg-[#111418] text-white placeholder-text-secondary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition-all" placeholder="Search pages, templates, or IDs..." type="text"/>
+</div>
+<div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+<button class="flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider rounded whitespace-nowrap">
+                            All Pages
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-border-dark hover:border-text-secondary text-text-secondary hover:text-white text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap">
+                            Production
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-border-dark hover:border-text-secondary text-text-secondary hover:text-white text-xs font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap">
+                            Beta
+                        </button>
+<div class="w-px h-6 bg-border-dark mx-1"></div>
+<button class="flex items-center justify-center size-8 rounded hover:bg-[#283039] text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+</button>
+<button class="flex items-center justify-center size-8 rounded hover:bg-[#283039] text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">list</span>
+</button>
+</div>
+</div>
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-10">
+<!-- Card 1: System Builder -->
+<article class="group relative flex flex-col bg-surface-dark border border-border-dark hover:border-primary/50 rounded overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/40">
+<div class="h-48 w-full bg-[#111418] relative overflow-hidden border-b border-border-dark">
+<div class="absolute inset-0 bg-cover bg-center opacity-70 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-105" data-alt="Abstract blueprint grid representing system topology builder interface" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBeXoov_sL5KSQ-ZvJasmwTlF7w1sCP4BvIFOUhsefKhwZhjerkIuU5E2ewSb9am5zJTrYqq1QcazQI91HtV0u0dTjS0A97BcQWiOyxZN3TzR-th6iA4xJ5GTOvUD7SNvzmMw_v-N6wYJw2Zbu0uDKL8WUdEGpbU3zqwiBScKTMo9rM_UjfwMMRNXzTc-Qs-XMFqK9rvZvOQqBEuDhoyweKuhgv2kh_YcIrt4HyYDcTZ2Sj6TF1mKurM14XsBBQBkKrt-Z7WdtLZbQ");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-90"></div>
+<div class="absolute top-3 right-3 flex gap-2">
+<span class="px-2 py-1 text-[10px] font-black uppercase tracking-widest text-[#4ade80] bg-[#4ade80]/10 rounded border border-[#4ade80]/20 backdrop-blur-md">Prod Ready</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+<div class="bg-[#111418]/80 backdrop-blur-md px-2 py-1 rounded border border-white/10">
+<p class="text-[10px] font-mono text-text-secondary">ID: PG-001</p>
+</div>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-white text-lg font-bold leading-tight group-hover:text-primary transition-colors">System Builder</h3>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-[20px]">drag_indicator</span>
+</div>
+<p class="text-text-secondary text-sm leading-relaxed line-clamp-2">Core canvas for drag-and-drop node topology creation. Supports real-time validation and localized constraint checking.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-border-dark flex flex-col gap-3">
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">aspect_ratio</span> Full-Canvas
+                                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">mouse</span> Drag &amp; Drop
+                                    </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-9 bg-primary/10 hover:bg-primary hover:text-white border border-primary/20 hover:border-primary text-primary text-xs font-bold uppercase tracking-wider rounded transition-all">Launch</button>
+<button class="size-9 flex items-center justify-center bg-[#283039] hover:bg-[#3e4a56] text-text-secondary hover:text-white rounded transition-colors border border-transparent hover:border-text-secondary/50" title="View Documentation">
+<span class="material-symbols-outlined text-[18px]">article</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2: Simulation Results -->
+<article class="group relative flex flex-col bg-surface-dark border border-border-dark hover:border-primary/50 rounded overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/40">
+<div class="h-48 w-full bg-[#111418] relative overflow-hidden border-b border-border-dark">
+<div class="absolute inset-0 bg-cover bg-center opacity-70 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-105" data-alt="Dark analytical dashboard showing complex data visualization curves" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAl80G7-H7AmNfG5IF9N5mUTU_bDgZjfVvTkXGwn58BkhwzZVudVi9U76iiPtn1do1lkj-h5yn0HXGBcgbTb2aZqp17Ii7Uk_XHRZNMlYxDU3iJC5DFkZsqRTljik8D9uqcQ2B_DSGy1K03TBDDyluHr_JXYxLbO_LLRG-QoHyp7n8lWTOr_Tla431BfpX8X0G-MX-U592lAarHx8XBTlENQ1ovh3k3aUg9sgtURWTjf7yWZPZbU1kNgiPe4AY-f4oEu03CRrx-5vA");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-90"></div>
+<div class="absolute top-3 right-3 flex gap-2">
+<span class="px-2 py-1 text-[10px] font-black uppercase tracking-widest text-[#4ade80] bg-[#4ade80]/10 rounded border border-[#4ade80]/20 backdrop-blur-md">Prod Ready</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+<div class="bg-[#111418]/80 backdrop-blur-md px-2 py-1 rounded border border-white/10">
+<p class="text-[10px] font-mono text-text-secondary">ID: PG-002</p>
+</div>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-white text-lg font-bold leading-tight group-hover:text-primary transition-colors">Simulation Results</h3>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-[20px]">monitoring</span>
+</div>
+<p class="text-text-secondary text-sm leading-relaxed line-clamp-2">High-density time-series analysis and log outputs post-simulation. Features synchronized cursor scrubbing across charts.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-border-dark flex flex-col gap-3">
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">grid_view</span> Dashboard Grid
+                                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">show_chart</span> D3.js
+                                    </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-9 bg-primary/10 hover:bg-primary hover:text-white border border-primary/20 hover:border-primary text-primary text-xs font-bold uppercase tracking-wider rounded transition-all">Launch</button>
+<button class="size-9 flex items-center justify-center bg-[#283039] hover:bg-[#3e4a56] text-text-secondary hover:text-white rounded transition-colors border border-transparent hover:border-text-secondary/50" title="View Documentation">
+<span class="material-symbols-outlined text-[18px]">article</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3: Scenario Comparison -->
+<article class="group relative flex flex-col bg-surface-dark border border-border-dark hover:border-primary/50 rounded overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/40">
+<div class="h-48 w-full bg-[#111418] relative overflow-hidden border-b border-border-dark">
+<div class="absolute inset-0 bg-cover bg-center opacity-70 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-105" data-alt="Abstract split screen interface showing data comparison" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvfOJG-YWtkTcKyYdg1Qq4LmFvfr4zFJStaMITS8K8NZ3MR5SfvC1din270xroteHOKWIiC6reLNVbssC39YSkMskVQHBH_sr3SIdDAnqjl_x1Lb995ZPQ8xoLVVbv98sDMmMjnT5bqeB4hM9qbyjY-kGeSTA3cqj2vDgNIv3N2_iL41XUAO7WAxHWL8n4bXgqJzKKyXIlp53MOkiHcT1HA5Hf8dPGYIgGXgE3YeqpNcPFSSnTKGnBshp-6ndK34E31wSaLiTidII");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-90"></div>
+<div class="absolute top-3 right-3 flex gap-2">
+<span class="px-2 py-1 text-[10px] font-black uppercase tracking-widest text-[#fbbf24] bg-[#fbbf24]/10 rounded border border-[#fbbf24]/20 backdrop-blur-md">Beta v0.9</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+<div class="bg-[#111418]/80 backdrop-blur-md px-2 py-1 rounded border border-white/10">
+<p class="text-[10px] font-mono text-text-secondary">ID: PG-003</p>
+</div>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-white text-lg font-bold leading-tight group-hover:text-primary transition-colors">Scenario Comparison</h3>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-[20px]">compare_arrows</span>
+</div>
+<p class="text-text-secondary text-sm leading-relaxed line-clamp-2">Side-by-side diff view of two independent simulation runs. Highlights divergent metrics and cost fluctuations.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-border-dark flex flex-col gap-3">
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">vertical_split</span> Split-Pane
+                                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">difference</span> Diff Engine
+                                    </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-9 bg-primary/10 hover:bg-primary hover:text-white border border-primary/20 hover:border-primary text-primary text-xs font-bold uppercase tracking-wider rounded transition-all">Launch</button>
+<button class="size-9 flex items-center justify-center bg-[#283039] hover:bg-[#3e4a56] text-text-secondary hover:text-white rounded transition-colors border border-transparent hover:border-text-secondary/50" title="View Documentation">
+<span class="material-symbols-outlined text-[18px]">article</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 4: Failure Injection -->
+<article class="group relative flex flex-col bg-surface-dark border border-border-dark hover:border-primary/50 rounded overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/40">
+<div class="h-48 w-full bg-[#111418] relative overflow-hidden border-b border-border-dark">
+<div class="absolute inset-0 bg-cover bg-center opacity-70 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-105" data-alt="Red tinted abstract network nodes representing failure scenarios" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAPqsysOsAq-6Pb2Ay8Ez7F0iH3I8M6as8FR9y4Mwv9vkinsvLDj-vlFWvbN8R7-P-XSQeZ7UDb1fzevoxOijHNpP2yyjpNarw3FhDKSaLXeYMS2fWFuIwhsUDvdp2K0Tb2z-p6jL5zB7TUvuCa-cIUFNYVECw155VELOqXND-S9oejsml9jyNRP6cG1qsLJYaI8s2yPQmQMVynIz_A2uGx2eHsg3oDAjK7CqAZr00uK4jNWirSTR63HZsI7A_b4-ugpua01IdKkhQ");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-90"></div>
+<div class="absolute top-3 right-3 flex gap-2">
+<span class="px-2 py-1 text-[10px] font-black uppercase tracking-widest text-[#4ade80] bg-[#4ade80]/10 rounded border border-[#4ade80]/20 backdrop-blur-md">Stable</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+<div class="bg-[#111418]/80 backdrop-blur-md px-2 py-1 rounded border border-white/10">
+<p class="text-[10px] font-mono text-text-secondary">ID: PG-004</p>
+</div>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-white text-lg font-bold leading-tight group-hover:text-primary transition-colors">Failure Injection</h3>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-[20px]">bolt</span>
+</div>
+<p class="text-text-secondary text-sm leading-relaxed line-clamp-2">Configuration forms for introducing chaos engineering variables. Latency spikes, packet loss, and node outages.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-border-dark flex flex-col gap-3">
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">linear_scale</span> Form Wizard
+                                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">tune</span> Settings
+                                    </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-9 bg-primary/10 hover:bg-primary hover:text-white border border-primary/20 hover:border-primary text-primary text-xs font-bold uppercase tracking-wider rounded transition-all">Launch</button>
+<button class="size-9 flex items-center justify-center bg-[#283039] hover:bg-[#3e4a56] text-text-secondary hover:text-white rounded transition-colors border border-transparent hover:border-text-secondary/50" title="View Documentation">
+<span class="material-symbols-outlined text-[18px]">article</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 5: Request Trace Debug -->
+<article class="group relative flex flex-col bg-surface-dark border border-border-dark hover:border-primary/50 rounded overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/40">
+<div class="h-48 w-full bg-[#111418] relative overflow-hidden border-b border-border-dark">
+<div class="absolute inset-0 bg-cover bg-center opacity-70 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-105" data-alt="Waterfall chart visualization of a network request trace" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC4Bmp0SZueRxvf1rkigLp54kUijjRl_5Q2eiDEHSqOYgQ32ldxXsFZnQTZzAtDTQU0cBBzPbbDyV0Yia8Ed7HxYTXPV6Yiea4bGvj4KcjRdibCjwMgmmNLjfWnj_BXzfvIlj_E3VnxSWqGQal-lAj0vpsJGACVcRIbfMey8YMMXjFcT05puU9klW6_Vv2jaxzWqqKM1P2uR56PhhJAp57704V8IdVam9t-DFZ6YTrjkObJgXu6OXHUYbt56L28S0B2Cgz_dyZNI3Q");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-90"></div>
+<div class="absolute top-3 right-3 flex gap-2">
+<span class="px-2 py-1 text-[10px] font-black uppercase tracking-widest text-[#f472b6] bg-[#f472b6]/10 rounded border border-[#f472b6]/20 backdrop-blur-md">Experimental</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+<div class="bg-[#111418]/80 backdrop-blur-md px-2 py-1 rounded border border-white/10">
+<p class="text-[10px] font-mono text-text-secondary">ID: PG-005</p>
+</div>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-white text-lg font-bold leading-tight group-hover:text-primary transition-colors">Trace Debug</h3>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-[20px]">account_tree</span>
+</div>
+<p class="text-text-secondary text-sm leading-relaxed line-clamp-2">Waterfall visualization of a single request propagation. Drill down into specific microservice headers and payloads.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-border-dark flex flex-col gap-3">
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">view_sidebar</span> List-Detail
+                                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">waterfall_chart</span> Waterfall
+                                    </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-9 bg-primary/10 hover:bg-primary hover:text-white border border-primary/20 hover:border-primary text-primary text-xs font-bold uppercase tracking-wider rounded transition-all">Launch</button>
+<button class="size-9 flex items-center justify-center bg-[#283039] hover:bg-[#3e4a56] text-text-secondary hover:text-white rounded transition-colors border border-transparent hover:border-text-secondary/50" title="View Documentation">
+<span class="material-symbols-outlined text-[18px]">article</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 6: Cost Analysis -->
+<article class="group relative flex flex-col bg-surface-dark border border-border-dark hover:border-primary/50 rounded overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/40">
+<div class="h-48 w-full bg-[#111418] relative overflow-hidden border-b border-border-dark">
+<div class="absolute inset-0 bg-cover bg-center opacity-70 group-hover:opacity-100 transition-opacity duration-500 scale-100 group-hover:scale-105" data-alt="Financial bar charts and data tables on a dark background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuABrngZPRJG6X0ODM8bPQBd0EuhMgv6AoMHXHOQQ5X-7j8SGP8FRX34Ek1JLyM6Mk9OvQRMhrfhaqkMNYWjAQZMSIN0-kgpZNbaX76y3N3CzUDSQyk-ODX0q-udS8X5M2kj5YdiD-Gc7ALOoVqZ-KyvNTmecs_pNpjxlem1LBMDUYshcYmS8AxOTKVVCCqKkweGlrFw5TvRYWo6BLOo5eGRrNHizOmQsYgSFX0ZLl89HLiDm-zHdQpNi7MYjXF39bGy3_CoKmMCFYw");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent opacity-90"></div>
+<div class="absolute top-3 right-3 flex gap-2">
+<span class="px-2 py-1 text-[10px] font-black uppercase tracking-widest text-[#4ade80] bg-[#4ade80]/10 rounded border border-[#4ade80]/20 backdrop-blur-md">Stable</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+<div class="bg-[#111418]/80 backdrop-blur-md px-2 py-1 rounded border border-white/10">
+<p class="text-[10px] font-mono text-text-secondary">ID: PG-006</p>
+</div>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-white text-lg font-bold leading-tight group-hover:text-primary transition-colors">Cost Analysis</h3>
+<span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-[20px]">payments</span>
+</div>
+<p class="text-text-secondary text-sm leading-relaxed line-clamp-2">Tabular data and bar charts projecting infrastructure costs based on resource utilization and cloud provider rates.</p>
+</div>
+<div class="mt-auto pt-4 border-t border-border-dark flex flex-col gap-3">
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">table_chart</span> Data Table Focus
+                                    </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#283039] text-xs text-text-secondary border border-transparent hover:border-text-secondary/30 cursor-default">
+<span class="material-symbols-outlined text-[14px]">bar_chart</span> Projection
+                                    </span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-9 bg-primary/10 hover:bg-primary hover:text-white border border-primary/20 hover:border-primary text-primary text-xs font-bold uppercase tracking-wider rounded transition-all">Launch</button>
+<button class="size-9 flex items-center justify-center bg-[#283039] hover:bg-[#3e4a56] text-text-secondary hover:text-white rounded transition-colors border border-transparent hover:border-text-secondary/50" title="View Documentation">
+<span class="material-symbols-outlined text-[18px]">article</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+</div>
+</body></html>
