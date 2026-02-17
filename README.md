@@ -10,21 +10,32 @@ This repository provides everything needed to understand and build a **Discrete 
 
 ```
 hld-simulator-docs/
-├── docs/
-│   ├── part-1.md                     # Foundations
-│   ├── part-2.md                     # Introduction to Simulation
-│   └── part-3.md                     # Core Data Structures & Mechanics
+├── docs/                            # Theory & teaching curriculum
+│   ├── README.md                    # Curriculum index
+│   ├── concepts.md                  # Theoretical foundations
+│   ├── part-1.md                    # Foundations: nodes, edges, patterns
+│   ├── part-2.md                    # Introduction to simulation
+│   ├── part-3.md                    # Core data structures & mechanics
+│   ├── part-4.md                    # Advanced system behavior
+│   └── part-5.md                    # DEVS, chaos engineering & output analysis
 ├── schema/
-│   ├── complete_simulator_schema.ts  # Full TypeScript type definitions
-│   └── README.md                     # Schema documentation
-└── canonical-catalogue/
-    ├── *.csv                         # 17 reference catalogue files
-    └── README.md                     # Catalogue documentation
+│   ├── complete_simulator_schema.ts # Full TypeScript type definitions (2300+ lines)
+│   └── README.md                    # Schema documentation
+├── canonical-catalogue/
+│   ├── *.csv                        # 17 reference catalogue files
+│   └── README.md                    # Catalogue documentation
+└── planning/                        # Implementation roadmap
+    ├── IMPLEMENTATION_PLAN.md       # Phased build plan (10 phases)
+    └── TICKETS.md                   # 32 engineering tickets
 ```
 
-## Documentation Roadmap
+## Documentation
 
-### Part 1 — Foundations: Understanding System Diagrams
+### [Theoretical Foundations](docs/concepts.md)
+
+Maps academic theory to simulator features — queueing theory (G/G/c/K, Little's Law), DEVS formalism, probability distributions, reliability theory, graph theory, and control theory.
+
+### [Part 1 — Foundations: Understanding System Diagrams](docs/part-1.md)
 
 Covers the building blocks of any system diagram:
 
@@ -33,7 +44,7 @@ Covers the building blocks of any system diagram:
 - **Patterns** — sequence, fork, join, branch, loop, and parallel composition
 - Real-world examples across domains (hospitals, factories, e-commerce, web systems)
 
-### Part 2 — Introduction to Simulation
+### [Part 2 — Introduction to Simulation](docs/part-2.md)
 
 Introduces core simulation concepts:
 
@@ -43,7 +54,7 @@ Introduces core simulation concepts:
 - Queues, overflow strategies, and Little's Law
 - Randomness, distributions (exponential, log-normal, Poisson), and deterministic replay via seeded PRNGs
 
-### Part 3 — Core Data Structures & Mechanics
+### [Part 3 — Core Data Structures & Mechanics](docs/part-3.md)
 
 Covers implementation in depth with working code:
 
@@ -51,11 +62,29 @@ Covers implementation in depth with working code:
 - **Precision & determinism** — BigInt timestamps, SFC32 PRNG, distribution generators
 - **G/G/c/K queueing model** — formalizing node behavior with Kendall's notation
 - **Workload generation** — constant, Poisson, bursty, diurnal, and spike traffic patterns
-- **Simulation engine** — complete implementation with event handlers, latency percentiles (p50/p90/p95/p99), and Little's Law verification
+- **Simulation engine** — complete implementation with event handlers, latency percentiles (P50/P90/P95/P99), and Little's Law verification
+
+### [Part 4 — Advanced System Behavior](docs/part-4.md)
+
+Models real-world distributed system complexity:
+
+- **Distributed systems** — dependency graphs, critical vs optional dependencies, fallback behavior
+- **Network physics** — latency decomposition (propagation + transmission + processing + queuing + jitter), congestion modeling
+- **Failure modes** — crash, omission, timing, response, Byzantine; resource exhaustion taxonomy
+- **Failure propagation** — timeout cascades, retry amplification, resource starvation, thundering herd, cache stampede
+- **Resilience patterns** — circuit breaker, bulkhead, retry with backoff, backpressure, rate limiting, load shedding
+
+### [Part 5 — DEVS, Chaos Engineering & Output Analysis](docs/part-5.md)
+
+Formalizes the simulator and adds validation:
+
+- **DEVS formalism** — atomic and coupled DEVS models, time advance functions, hierarchical composition
+- **Chaos engineering** — structured experiment workflow, fault injection catalog, pre-built experiments
+- **Output analysis** — metrics collection, waterfall traces, heatmaps, causal failure graphs, bottleneck identification
 
 ## Canonical Catalogue
 
-The `canonical-catalogue/` directory contains 17 CSV reference files (the DSDS Canonical Catalogue) covering:
+The [`canonical-catalogue/`](canonical-catalogue/) directory contains 17 CSV reference files covering:
 
 - **Component taxonomy** — ~110+ component types across 13 categories (compute, network, storage, messaging, orchestration, security, observability, DevOps, data infra, real-time, integration, consensus, DNS)
 - **Component specification** — YAML schema template and uniform attributes every component must support
@@ -72,7 +101,7 @@ See [`canonical-catalogue/README.md`](canonical-catalogue/README.md) for detaile
 
 ## Schema
 
-`schema/complete_simulator_schema.ts` consolidates the full type system for the simulator (2300+ lines), incorporating definitions from both the documentation and the canonical catalogue. It is organized into 17 parts:
+[`schema/complete_simulator_schema.ts`](schema/complete_simulator_schema.ts) consolidates the full type system for the simulator (2300+ lines), incorporating definitions from both the documentation and the canonical catalogue. It is organized into 17 parts:
 
 - **Component types** — union types for all ~110+ component types plus a unified `ComponentType`
 - **Component specification** — `ComponentDefinition` with identity, resources, lifecycle, dependencies, health checks, telemetry, SLOs, fault injection, scaling, and security
@@ -89,3 +118,11 @@ See [`canonical-catalogue/README.md`](canonical-catalogue/README.md) for detaile
 - **Component configs** — type-specific configurations for APIs, databases, caches, queues, streams, serverless functions, CDNs, SFUs, and gateways
 
 See [`schema/README.md`](schema/README.md) for the full breakdown.
+
+## Planning
+
+The [`planning/`](planning/) directory contains the implementation roadmap:
+
+- [**Implementation Plan**](planning/IMPLEMENTATION_PLAN.md) — 10-phase build plan covering topology JSON format, core primitives, simulation engine, network modeling, failure injection, resilience patterns, metrics/output, chaos scenarios, UI integration, and advanced features. Includes dependency graph, file structure, and the critical path for an MVP.
+
+- [**Tickets**](planning/TICKETS.md) — 32 self-contained engineering tickets with detailed specs, acceptance criteria, dependency chains, and size estimates. 4 tickets can be started immediately with zero blockers.
