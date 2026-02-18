@@ -10,32 +10,40 @@ This repository provides everything needed to understand and build a **Discrete 
 
 ```
 hld-simulator-docs/
-├── docs/                            # Theory & teaching curriculum
-│   ├── README.md                    # Curriculum index
-│   ├── concepts.md                  # Theoretical foundations
-│   ├── part-1.md                    # Foundations: nodes, edges, patterns
-│   ├── part-2.md                    # Introduction to simulation
-│   ├── part-3.md                    # Core data structures & mechanics
-│   ├── part-4.md                    # Advanced system behavior
-│   └── part-5.md                    # DEVS, chaos engineering & output analysis
+├── docs/                            # Theory, teaching curriculum & system reference
+│   ├── README.md                    # Curriculum index (5-part learning guide)
+│   ├── SYSTEM_OVERVIEW.md           # How the simulator works end-to-end (UI, CLI, engine)
+│   ├── theoretical-foundations.md   # Academic theory: queueing, DES, probability, reliability
+│   ├── 01-system-diagrams.md        # Part 1: Nodes, edges, graph patterns
+│   ├── 02-simulation-fundamentals.md # Part 2: Events, time, the event loop
+│   ├── 03-data-structures-and-mechanics.md  # Part 3: Min-heap, PRNG, distributions, G/G/c/K
+│   ├── 04-distributed-systems-and-failures.md # Part 4: Network physics, failure propagation
+│   └── 05-devs-chaos-and-analysis.md # Part 5: DEVS formalism, chaos engineering, output analysis
 ├── schema/
 │   ├── complete_simulator_schema.ts # Full TypeScript type definitions (2300+ lines)
 │   └── README.md                    # Schema documentation
 ├── canonical-catalogue/
 │   ├── *.csv                        # 17 reference catalogue files
 │   └── README.md                    # Catalogue documentation
-└── planning/                        # Implementation roadmap
-    ├── IMPLEMENTATION_PLAN.md       # Phased build plan (10 phases)
-    └── TICKETS.md                   # 32 engineering tickets
+├── planning/                        # Implementation roadmap
+│   ├── IMPLEMENTATION_PLAN.md       # Phased build plan (10 phases)
+│   └── TICKETS.md                   # 46 engineering tickets
+└── design-decisions/                # Architecture decision records
+    ├── adr-internal-modularity-over-plugin-system.md
+    └── adr-no-custom-change-detection.md
 ```
 
 ## Documentation
 
-### [Theoretical Foundations](docs/concepts.md)
+### [System Overview](docs/SYSTEM_OVERVIEW.md)
+
+The single source of truth for understanding the simulator end-to-end. Covers how the simulation engine works, the three user phases (BUILD → SIMULATE → ANALYSE), UI representation (screen layout, canvas states, inspector, JSON topology viewer, results tray), CLI commands, component inventory, feature-to-ticket map, and design foundations.
+
+### [Theoretical Foundations](docs/theoretical-foundations.md)
 
 Maps academic theory to simulator features — queueing theory (G/G/c/K, Little's Law), DEVS formalism, probability distributions, reliability theory, graph theory, and control theory.
 
-### [Part 1 — Foundations: Understanding System Diagrams](docs/part-1.md)
+### [Part 1 — System Diagrams](docs/01-system-diagrams.md)
 
 Covers the building blocks of any system diagram:
 
@@ -44,7 +52,7 @@ Covers the building blocks of any system diagram:
 - **Patterns** — sequence, fork, join, branch, loop, and parallel composition
 - Real-world examples across domains (hospitals, factories, e-commerce, web systems)
 
-### [Part 2 — Introduction to Simulation](docs/part-2.md)
+### [Part 2 — Simulation Fundamentals](docs/02-simulation-fundamentals.md)
 
 Introduces core simulation concepts:
 
@@ -54,7 +62,7 @@ Introduces core simulation concepts:
 - Queues, overflow strategies, and Little's Law
 - Randomness, distributions (exponential, log-normal, Poisson), and deterministic replay via seeded PRNGs
 
-### [Part 3 — Core Data Structures & Mechanics](docs/part-3.md)
+### [Part 3 — Data Structures & Mechanics](docs/03-data-structures-and-mechanics.md)
 
 Covers implementation in depth with working code:
 
@@ -64,7 +72,7 @@ Covers implementation in depth with working code:
 - **Workload generation** — constant, Poisson, bursty, diurnal, and spike traffic patterns
 - **Simulation engine** — complete implementation with event handlers, latency percentiles (P50/P90/P95/P99), and Little's Law verification
 
-### [Part 4 — Advanced System Behavior](docs/part-4.md)
+### [Part 4 — Distributed Systems & Failures](docs/04-distributed-systems-and-failures.md)
 
 Models real-world distributed system complexity:
 
@@ -74,7 +82,7 @@ Models real-world distributed system complexity:
 - **Failure propagation** — timeout cascades, retry amplification, resource starvation, thundering herd, cache stampede
 - **Resilience patterns** — circuit breaker, bulkhead, retry with backoff, backpressure, rate limiting, load shedding
 
-### [Part 5 — DEVS, Chaos Engineering & Output Analysis](docs/part-5.md)
+### [Part 5 — DEVS, Chaos Engineering & Output Analysis](docs/05-devs-chaos-and-analysis.md)
 
 Formalizes the simulator and adds validation:
 
@@ -125,4 +133,12 @@ The [`planning/`](planning/) directory contains the implementation roadmap:
 
 - [**Implementation Plan**](planning/IMPLEMENTATION_PLAN.md) — 10-phase build plan covering topology JSON format, core primitives, simulation engine, network modeling, failure injection, resilience patterns, metrics/output, chaos scenarios, UI integration, and advanced features. Includes dependency graph, file structure, and the critical path for an MVP.
 
-- [**Tickets**](planning/TICKETS.md) — 32 self-contained engineering tickets with detailed specs, acceptance criteria, dependency chains, and size estimates. 4 tickets can be started immediately with zero blockers.
+- [**Tickets**](planning/TICKETS.md) — 46 self-contained engineering tickets with detailed specs, acceptance criteria, dependency chains, and size estimates. Organized into 12 phases covering the core engine, UI components, topology state management, CLI, and more.
+
+## Design Decisions
+
+The [`design-decisions/`](design-decisions/) directory contains architecture decision records (ADRs):
+
+- [**Internal Modularity Over Plugin System**](design-decisions/adr-internal-modularity-over-plugin-system.md) — Why the engine uses internal module boundaries instead of a runtime plugin system. The core DES loop is domain-agnostic; domain logic (queueing, network, failures) is structured as modules with clean interfaces, but ships as one package.
+
+- [**No Custom Change Detection**](design-decisions/adr-no-custom-change-detection.md) — Why no mutation observer or custom reactivity is needed. BUILD-phase state uses Zustand selector subscriptions. SIMULATE-phase data uses Web Worker `postMessage`. Both feed into React's standard re-render cycle.
