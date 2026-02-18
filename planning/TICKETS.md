@@ -1691,6 +1691,8 @@ interface EdgeVisualStyle {
 
 **Context**: The React Flow canvas has its own internal node/edge format. We need to convert that into the `TopologyJSON` format the engine expects, filling in defaults for any unconfigured properties.
 
+> **Note (post T-043)**: Once the Topology State Store (T-043) is built, this serializer becomes the `exportTopology()` method on the store. The mapping logic and default values defined here still apply — they move into the store's derived state computation. This ticket should still be built first as a standalone function, then integrated into the store.
+
 **What to build**:
 
 ```typescript
@@ -2984,8 +2986,6 @@ export function ImportExportControls() {
 
 ### By Phase
 
-### By Phase
-
 | Phase | Tickets |
 |-------|---------|
 | 0 — JSON Format | T-001, T-002, T-003 |
@@ -3000,6 +3000,7 @@ export function ImportExportControls() {
 | 9 — Advanced Analysis | T-029, T-030, T-031, T-032 |
 | 10 — UI Components | T-033, T-034, T-035, T-036, T-037, T-038, T-039 |
 | 11 — CLI | T-040, T-041, T-042 |
+| 12 — Topology State & Viewer | T-043, T-044, T-045, T-046 |
 
 ### By Independence (can start immediately — no blockers)
 
@@ -3067,6 +3068,16 @@ T-001 ──► T-033 (Inspector Panel)     — only needs types
 T-001 ──► T-039 (Node Palette)        — only needs types
 T-001 ──► T-030 → T-038 (Anti-patterns panel)
 T-001 ──► T-031 → T-038 (Cost panel)
+
+Topology State & Viewer chain:
+
+T-001 + T-003 ──► T-043 (Topology Store)
+                      │
+                 ┌────┼──────┐
+                 ▼    ▼      ▼
+              T-044 T-045  T-046
+              (JSON  (De-   (Import/
+              Viewer serial) Export)
 ```
 
 ### CLI chain
@@ -3083,9 +3094,9 @@ T-011 + T-020 + T-003 ──► T-040 (base CLI)
 
 | Size | Tickets |
 |------|---------|
-| **S** (1-2 hrs) | T-002, T-004, T-005, T-007, T-010, T-018, T-019, T-020, T-021, T-024, T-027, T-030, T-031, T-032, T-038, T-039, T-042 |
-| **M** (3-5 hrs) | T-001, T-003, T-006, T-009, T-012, T-015, T-016, T-017, T-022, T-023, T-025, T-026, T-028, T-029, T-035, T-036, T-037, T-041 |
-| **L** (1 day) | T-008, T-013, T-014, T-033, T-034, T-040 |
+| **S** (1-2 hrs) | T-002, T-004, T-005, T-007, T-010, T-018, T-019, T-020, T-021, T-024, T-027, T-030, T-031, T-032, T-038, T-039, T-042, T-046 |
+| **M** (3-5 hrs) | T-001, T-003, T-006, T-009, T-012, T-015, T-016, T-017, T-022, T-023, T-025, T-026, T-028, T-029, T-035, T-036, T-037, T-041, T-043, T-045 |
+| **L** (1 day) | T-008, T-013, T-014, T-033, T-034, T-040, T-044 |
 | **XL** (2+ days) | T-011 |
 
 ### By Layer
@@ -3096,6 +3107,6 @@ T-011 + T-020 + T-003 ──► T-040 (base CLI)
 | **Data** (types, validation, output) | T-001, T-002, T-003, T-017, T-018, T-019, T-020, T-021 | Contracts, metrics collection, output aggregation |
 | **Analysis** (static + post-sim) | T-030, T-031, T-032 | Anti-patterns, cost, design comparison |
 | **Scenarios** (chaos engineering) | T-022, T-023, T-024 | Experiment runner, presets, composer |
-| **UI Hooks** (glue) | T-025, T-026, T-027, T-028 | Web Worker, React hooks, serializer |
-| **UI Components** (React) | T-033, T-034, T-035, T-036, T-037, T-038, T-039 | Inspector, Scenario Bar, Results Tray, Palette |
+| **UI State & Hooks** (glue) | T-025, T-026, T-027, T-028, T-043, T-045 | Web Worker, React hooks, serializer, topology store, deserializer |
+| **UI Components** (React) | T-033, T-034, T-035, T-036, T-037, T-038, T-039, T-044, T-046 | Inspector, Scenario Bar, Results Tray, Palette, JSON Viewer, Import/Export |
 | **CLI** (terminal) | T-040, T-041, T-042 | `dsds` command runner |
