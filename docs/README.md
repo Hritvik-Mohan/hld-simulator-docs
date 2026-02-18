@@ -66,8 +66,8 @@ NO PRIOR KNOWLEDGE NEEDED
 ## 🗂️ Curriculum Index
 
 ### Part 1 & 2: Foundations & Simulation Basics
-**File:** `system_design_simulation_parts_1_and_2.md`  
-**Lines:** ~1,800  
+**Files:** `01-system-diagrams.md` and `02-simulation-fundamentals.md`
+**Lines:** ~1,800
 **Time:** 4-6 hours
 
 | Chapter | Title | Key Concepts |
@@ -89,8 +89,8 @@ NO PRIOR KNOWLEDGE NEEDED
 ---
 
 ### Part 3: Core Data Structures & Mechanics
-**File:** `part3_core_data_structures.md`  
-**Lines:** ~2,300  
+**File:** `03-data-structures-and-mechanics.md`
+**Lines:** ~2,300
 **Time:** 6-8 hours
 
 | Chapter | Title | Key Concepts |
@@ -105,8 +105,8 @@ NO PRIOR KNOWLEDGE NEEDED
 ---
 
 ### Part 4: Advanced System Behavior
-**File:** `part4_advanced_system_behavior.md`  
-**Lines:** ~2,100  
+**File:** `04-distributed-systems-and-failures.md`
+**Lines:** ~2,100
 **Time:** 6-8 hours
 
 | Chapter | Title | Key Concepts |
@@ -121,8 +121,8 @@ NO PRIOR KNOWLEDGE NEEDED
 ---
 
 ### Part 5: DEVS, Chaos Engineering & Output Analysis
-**File:** `part5_devs_chaos_analysis.md`  
-**Lines:** ~1,000  
+**File:** `05-devs-chaos-and-analysis.md`
+**Lines:** ~1,000
 **Time:** 4-6 hours
 
 | Chapter | Title | Key Concepts |
@@ -756,12 +756,13 @@ After each part, you should be able to:
 
 ```bash
 # 1. Start with Parts 1-2
-open system_design_simulation_parts_1_and_2.md
+open 01-system-diagrams.md
+open 02-simulation-fundamentals.md
 
 # 2. Progress through each part in order
-open part3_core_data_structures.md
-open part4_advanced_system_behavior.md
-open part5_devs_chaos_analysis.md
+open 03-data-structures-and-mechanics.md
+open 04-distributed-systems-and-failures.md
+open 05-devs-chaos-and-analysis.md
 
 # 3. Code along with examples
 # All code is JavaScript, runnable in Node.js or browser
